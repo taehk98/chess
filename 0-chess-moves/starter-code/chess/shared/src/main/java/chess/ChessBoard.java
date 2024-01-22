@@ -29,12 +29,12 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.equals(squares, that.squares);
+        return Arrays.deepEquals(squares, that.squares);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(squares);
+        return Arrays.deepHashCode(squares);
     }
 
     /**
@@ -53,6 +53,34 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        squares = new ChessPiece[8][8];
+        squares = new ChessPiece[9][9];
+        ChessGame.TeamColor white = ChessGame.TeamColor.WHITE;
+        ChessGame.TeamColor black = ChessGame.TeamColor.BLACK;
+
+        for(int i = 1; i <= 8; i++) {
+            squares[2][i] = new ChessPiece(white, ChessPiece.PieceType.PAWN);
+            squares[7][i] = new ChessPiece(black, ChessPiece.PieceType.PAWN);
+
+            if(i == 1 || i == 8) {
+                squares[1][i] = new ChessPiece(white, ChessPiece.PieceType.ROOK);
+                squares[8][i] = new ChessPiece(black, ChessPiece.PieceType.ROOK);
+            }
+            if(i == 2 || i == 7) {
+                squares[1][i] = new ChessPiece(white, ChessPiece.PieceType.KNIGHT);
+                squares[8][i] = new ChessPiece(black, ChessPiece.PieceType.KNIGHT);
+            }
+            if(i == 3 || i == 6) {
+                squares[1][i] = new ChessPiece(white, ChessPiece.PieceType.BISHOP);
+                squares[8][i] = new ChessPiece(black, ChessPiece.PieceType.BISHOP);
+            }
+            if(i == 4) {
+                squares[1][i] = new ChessPiece(white, ChessPiece.PieceType.QUEEN);
+                squares[8][i] = new ChessPiece(black, ChessPiece.PieceType.QUEEN);
+            }
+            if(i == 5) {
+                squares[1][i] = new ChessPiece(white, ChessPiece.PieceType.KING);
+                squares[8][i] = new ChessPiece(black, ChessPiece.PieceType.KING);
+            }
+        }
     }
 }
