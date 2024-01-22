@@ -2,6 +2,7 @@ package chess;
 
 import chess.PieceMovesCalculators.BishopMovesCalculator;
 import chess.PieceMovesCalculators.KingMovesCalculator;
+import chess.PieceMovesCalculators.KnightMovesCalculator;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -76,6 +77,10 @@ public class ChessPiece {
             case KING -> {
                 KingMovesCalculator kingCalc = new KingMovesCalculator();
                 yield kingCalc.pieceMoves(board, myPosition);
+            }
+            case KNIGHT -> {
+                KnightMovesCalculator knightCalc = new KnightMovesCalculator();
+                yield knightCalc.pieceMoves(board,myPosition);
             }
             default -> null;
         };
