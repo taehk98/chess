@@ -63,12 +63,10 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
                 ChessMove move = new ChessMove(position, pos2, null);
                 moves.add(move);
                 break;
-//            } // When there is an enemy's piece, add the move and end the loop;
-            } // top right diagonal
-        }
+            } // When there is an enemy's piece, add the move and end the loop
+        }// top right diagonal
 
         temptRow = position.getRow();
-
         for (int i = position.getColumn()-1; i >=1; i--) {
             temptRow--;
             if (temptRow < 1) {
