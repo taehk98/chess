@@ -1,9 +1,6 @@
 package chess;
 
-import chess.PieceMovesCalculators.BishopMovesCalculator;
-import chess.PieceMovesCalculators.KingMovesCalculator;
-import chess.PieceMovesCalculators.KnightMovesCalculator;
-import chess.PieceMovesCalculators.RookMovesCalculator;
+import chess.PieceMovesCalculators.*;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -86,6 +83,10 @@ public class ChessPiece {
             case ROOK -> {
                 RookMovesCalculator rookCalc = new RookMovesCalculator();
                 yield rookCalc.pieceMoves(board, myPosition);
+            }
+            case QUEEN -> {
+                QueenMovesCalculator queenCalc = new QueenMovesCalculator();
+                yield queenCalc.pieceMoves(board, myPosition);
             }
             default -> null;
         };
