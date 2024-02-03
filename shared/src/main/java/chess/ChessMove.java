@@ -13,6 +13,14 @@ public class ChessMove {
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
+
+    /**
+     * Instantiates a new Chess move.
+     *
+     * @param startPosition  the start position
+     * @param endPosition    the end position
+     * @param promotionPiece the promotion piece
+     */
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
@@ -21,6 +29,8 @@ public class ChessMove {
     }
 
     /**
+     * Gets start position.
+     *
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
@@ -28,6 +38,8 @@ public class ChessMove {
     }
 
     /**
+     * Gets end position.
+     *
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
@@ -49,7 +61,7 @@ public class ChessMove {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+        return Objects.deepEquals(startPosition, chessMove.startPosition) && Objects.deepEquals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
     @Override

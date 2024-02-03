@@ -83,9 +83,9 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             }
 
             ChessPosition leftDiagPos = new ChessPosition(position.getRow()+1 , position.getColumn()-1);
-            if(position.getColumn()-1 >= 1 && board.getPiece(leftDiagPos) != null
+            if(position.getColumn()-1 >= 1 && (board.getPiece(leftDiagPos) != null
                     && (board.getPiece(leftDiagPos).getTeamColor()
-                    != board.getPiece(position).getTeamColor())){
+                    != board.getPiece(position).getTeamColor()))){
                 if(position.getRow() == 7){
                     moves.add(new ChessMove(position, leftDiagPos, ChessPiece.PieceType.BISHOP));
                     moves.add(new ChessMove(position, leftDiagPos, ChessPiece.PieceType.KNIGHT));
@@ -98,9 +98,9 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             }
 
             ChessPosition rightDiagPos = new ChessPosition(position.getRow()+1 , position.getColumn()+1);
-            if(position.getColumn()-1 >= 8 && board.getPiece(rightDiagPos) != null
+            if(position.getColumn()+1 <= 8 && (board.getPiece(rightDiagPos) != null
                     && (board.getPiece(rightDiagPos).getTeamColor()
-                    != board.getPiece(position).getTeamColor())) {
+                    != board.getPiece(position).getTeamColor()))) {
                 if(position.getRow() == 7){
                     moves.add(new ChessMove(position, rightDiagPos, ChessPiece.PieceType.BISHOP));
                     moves.add(new ChessMove(position, rightDiagPos, ChessPiece.PieceType.KNIGHT));
