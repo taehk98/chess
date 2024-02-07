@@ -222,7 +222,6 @@ public class ChessGame {
         }
         return true;
     }
-
     /**
      * Makes a move in a chess game
      *
