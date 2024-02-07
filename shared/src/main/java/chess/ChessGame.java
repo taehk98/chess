@@ -21,12 +21,6 @@ public class ChessGame {
     private boolean hasWhite8RookMoved = false;
     private boolean hasBlack1RookMoved = false;
     private boolean hasBlack8RookMoved = false;
-    private boolean white1RookCast = false;
-    private boolean white8RookCast = false;
-    private boolean black1RookCast = false;
-    private boolean black8RookCast = false;
-
-
     public ChessGame() {
         board.resetBoard();
     }
@@ -37,7 +31,6 @@ public class ChessGame {
     public TeamColor getTeamTurn() {
         return currentTurn;
     }
-
     /**
      * Set's which teams turn it is
      *
