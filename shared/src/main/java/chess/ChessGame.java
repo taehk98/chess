@@ -15,6 +15,12 @@ import chess.ChessPiece.PieceType;
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
     private TeamColor currentTurn = TeamColor.WHITE;
+    private boolean hasWhiteKingMoved = false;
+    private boolean hasBlackKingMoved = false;
+    private boolean hasWhite1RookMoved = false;
+    private boolean hasWhite8RookMoved = false;
+    private boolean hasBlack1RookMoved = false;
+    private boolean hasBlack8RookMoved = false;
 
     public ChessGame() {
         board.resetBoard();
@@ -89,6 +95,16 @@ public class ChessGame {
         return moves;
     }
 
+    public HashSet<ChessMove> castlingMove(HashSet<ChessMove> moves, ChessPosition startPosition){
+        ChessPiece currPiece = board.getPiece(startPosition);
+        if(currPiece.getTeamColor() == TeamColor.WHITE){
+            if(!hasWhite1RookMoved && !hasWhiteKingMoved && isInCheck(currPiece.getTeamColor())){
+
+            }
+        }
+
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -107,6 +123,28 @@ public class ChessGame {
             }
             board.deletePiece(move.getStartPosition());
             currentTurn = (currentTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+            ChessPiece movedPiece = board.getPiece(move.getEndPosition());
+            if(movedPiece.getPieceType() == PieceType.KING){
+                if(movedPiece.getTeamColor() == TeamColor.WHITE){
+                    hasWhiteKingMoved = true;
+                }else{
+                    hasBlackKingMoved = true;
+                }
+            }else if(movedPiece.getPieceType() == PieceType.ROOK
+                    && move.getStartPosition().getColumn() == 1){
+                if(movedPiece.getTeamColor() == TeamColor.WHITE){
+                    hasWhite1RookMoved = true;
+                }else{
+                    hasBlack1RookMoved = true;
+                }
+            }else if(movedPiece.getPieceType() == PieceType.ROOK
+                    && move.getStartPosition().getColumn() == 8){
+                if(movedPiece.getTeamColor() == TeamColor.WHITE){
+                    hasWhite8RookMoved = true;
+                }else{
+                    hasBlack8RookMoved = true;
+                }
+            }
         }
         else{
             throw new InvalidMoveException("Invalid chess move");
