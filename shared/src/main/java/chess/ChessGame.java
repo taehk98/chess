@@ -122,7 +122,6 @@ public class ChessGame {
                         } else if (currPiece.getPieceType() == PieceType.ROOK
                                 && startPosition.getColumn() == 1 && startPosition.getRow() == 1) {
                             move = new ChessMove(startPosition, new ChessPosition(1, 4), null);
-                            white1RookCast = true;
                         }
                         if (move != null) {
                             moves.add(move);
@@ -140,7 +139,6 @@ public class ChessGame {
                         } else if (currPiece.getPieceType() == PieceType.ROOK
                                 && startPosition.getColumn() == 8 && startPosition.getRow() == 1) {
                             move = new ChessMove(startPosition, new ChessPosition(1, 6), null);
-                            white8RookCast = true;
                         }
                         if (move != null) {
                             moves.add(move);
@@ -161,7 +159,6 @@ public class ChessGame {
                         }else if (currPiece.getPieceType() == PieceType.ROOK
                                 && startPosition.getColumn() == 1 && startPosition.getRow() == 8){
                             move = new ChessMove(startPosition, new ChessPosition(8, 4), null);
-                            black1RookCast = true;
                         }
                         if(move != null) {
                             moves.add(move);
@@ -179,7 +176,6 @@ public class ChessGame {
                         }else if (currPiece.getPieceType() == PieceType.ROOK
                                 && startPosition.getColumn() == 8 && startPosition.getRow() == 8){
                             move = new ChessMove(startPosition, new ChessPosition(8, 6), null);
-                            black8RookCast = true;
                         }
                         if(move != null) {
                             moves.add(move);
@@ -257,25 +253,6 @@ public class ChessGame {
                     board.deletePiece(new ChessPosition(8, 8));
                 }
             }
-//            }else if(piece.getPieceType() == PieceType.ROOK){
-//                if(!hasBlack1RookMoved && white1RookCast && move.getEndPosition().getColumn() == 4){
-//                    board.addPiece(new ChessPosition(1,3), new ChessPiece(piece.getTeamColor(), PieceType.KING));
-//                    board.deletePiece(new ChessPosition(1,5));
-//                }
-//                if(!hasBlack1RookMoved && white8RookCast && move.getEndPosition().getColumn() == 6){
-//                    board.addPiece(new ChessPosition(1,7), new ChessPiece(piece.getTeamColor(), PieceType.KING));
-//                    board.deletePiece(new ChessPosition(1,5));
-//                }
-//                if(!hasBlack1RookMoved && black1RookCast && move.getEndPosition().getColumn() == 4){
-//                    board.addPiece(new ChessPosition(8,3), new ChessPiece(piece.getTeamColor(), PieceType.KING));
-//                    board.deletePiece(new ChessPosition(8,5));
-//                }
-//                if(!hasBlack1RookMoved && black8RookCast && move.getEndPosition().getColumn() == 6){
-//                    board.addPiece(new ChessPosition(8,7), new ChessPiece(piece.getTeamColor(), PieceType.KING));
-//                    board.deletePiece(new ChessPosition(8,5));
-//                }
-//            }
-
 
             //check if king or rook has moved;
             ChessPiece movedPiece = board.getPiece(move.getEndPosition());
@@ -459,10 +436,6 @@ public class ChessGame {
         hasBlack8RookMoved = false;
         hasWhite1RookMoved = false;
         hasWhite8RookMoved = false;
-        white1RookCast = false;
-        white8RookCast = false;
-        black1RookCast = false;
-        black8RookCast = false;
         this.board = board;
     }
 
