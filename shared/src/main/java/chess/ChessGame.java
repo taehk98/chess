@@ -212,8 +212,7 @@ public class ChessGame {
                             checkingPos1 = new ChessPosition(checkingRow, 7);
                             checkingPos2 = new ChessPosition(checkingRow, 6);
                         }
-                        if (move.getEndPosition().equals(checkingPos1)
-                                || move.getEndPosition().equals(checkingPos2)) {
+                        if (move.getEndPosition().equals(checkingPos1) || move.getEndPosition().equals(checkingPos2)) {
                             return false;
                         }
                     }
