@@ -73,8 +73,6 @@ public class ChessGame {
 
         Collection<ChessMove> unfilteredMoves = piece.pieceMoves(board, startPosition);
 
-
-
         for(ChessMove move : unfilteredMoves){
             ChessPiece movedPlaceOriPiece = board.getPiece(move.getEndPosition());
 
