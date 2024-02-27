@@ -1,13 +1,6 @@
 package server;
-import com.google.gson.Gson;
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
-import model.UserData;
-import Service.UserService;
-import spark.*;
 
-import java.security.Provider;
+import spark.Spark;
 
 public class Server {
 
