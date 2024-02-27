@@ -1,6 +1,7 @@
 package server;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import model.UserData;
 import Service.UserService;
@@ -9,17 +10,12 @@ import spark.*;
 import java.security.Provider;
 
 public class Server {
-    private final UserService userService;
-//    private final Service.AuthService authService;
 
-//    public Server(AuthDAO authDao) {
-//        authService = new Service.AuthService(authDao);
-//    }
+    private final ServerHandlers serverHandlers;
 
     public Server() {
-        userService = new UserService();
+        this.serverHandlers = new ServerHandlers();
     }
-
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -27,7 +23,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.post("/session", this::loginHandler);
+        Spark.post("/session", serverHandlers::loginHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -38,9 +34,5 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object loginHandler(Request req, Response res) {
-        var user = new Gson().fromJson(req.body(), UserData.class);
-        var auth = userService.login(user);
-        return new Gson().toJson(auth);
-    }
+
 }
