@@ -11,6 +11,23 @@ public class MemoryUserDAO implements UserDAO {
     }
     @Override
     public UserData getUser(UserData userData) throws DataAccessException {
-        return null;
+        UserData storedUser = users.get(userData.username());
+        if(storedUser != null && storedUser.password().equals(userData.password())) {
+            return storedUser;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public UserData createUser(UserData userData) {
+        UserData newUser = new UserData(userData.username(), userData.password(), userData.email());
+        users.put(newUser.username(), newUser);
+        return newUser;
+    }
+
+    @Override
+    public void clear() throws DataAccessException {
+        users.clear();
     }
 }

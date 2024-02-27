@@ -1,4 +1,4 @@
 package server;
 
-public class RegisterReq {
+public record RegisterReq(String username, String password) {
 }
