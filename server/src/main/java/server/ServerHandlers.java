@@ -22,4 +22,15 @@ public class ServerHandlers {
         }
         return new Gson().toJson(auth);
     }
+
+    Object registerHandler(Request req, Response res) throws DataAccessException {
+        var user = new Gson().fromJson(req.body(), UserData.class);
+        UserService userService = new UserService();
+        try{
+            var auth = userService.register(user);
+        }catch () {
+
+        }
+
+    }
 }
