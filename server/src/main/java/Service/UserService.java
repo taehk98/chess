@@ -43,7 +43,7 @@ public class UserService {
 
         return returnedAuth;
     }
-    public void logout(AuthData auth) throws DataAccessException{
+    public void logout(AuthData auth) throws DataAccessException {
         AuthData returnedAuth;
         returnedAuth = memoryAuthDAO.getAuth(auth);
         if(returnedAuth != null) {
@@ -51,7 +51,6 @@ public class UserService {
         }else {
             throw new DataAccessException("Error: unauthorized");
         }
-
 
     }
 
