@@ -4,6 +4,7 @@ import chess.*;
 import chess.PieceMovesCalculator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class PawnMovesCalculator implements PieceMovesCalculator {
@@ -72,10 +73,13 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             ChessPosition oneSqPos = new ChessPosition(position.getRow()+1 , position.getColumn());
             if(board.getPiece(oneSqPos) == null){
                 if(position.getRow() == 7){
-                    moves.add(new ChessMove(position, oneSqPos, ChessPiece.PieceType.BISHOP));
-                    moves.add(new ChessMove(position, oneSqPos, ChessPiece.PieceType.KNIGHT));
-                    moves.add(new ChessMove(position, oneSqPos, ChessPiece.PieceType.ROOK));
-                    moves.add(new ChessMove(position, oneSqPos, ChessPiece.PieceType.QUEEN));
+                    ChessMove[] newMoves = {
+                            new ChessMove(position, oneSqPos, ChessPiece.PieceType.BISHOP),
+                            new ChessMove(position, oneSqPos, ChessPiece.PieceType.KNIGHT),
+                            new ChessMove(position, oneSqPos, ChessPiece.PieceType.ROOK),
+                            new ChessMove(position, oneSqPos, ChessPiece.PieceType.QUEEN)
+                    };
+                    moves.addAll(Arrays.asList(newMoves));
                 }
                 else{
                     moves.add(new ChessMove(position, oneSqPos, null));
@@ -86,13 +90,17 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             if(position.getColumn()-1 >= 1 && (board.getPiece(leftDiagPos) != null
                     && (board.getPiece(leftDiagPos).getTeamColor()
                     != board.getPiece(position).getTeamColor()))){
-                if(position.getRow() == 7){
-                    moves.add(new ChessMove(position, leftDiagPos, ChessPiece.PieceType.BISHOP));
-                    moves.add(new ChessMove(position, leftDiagPos, ChessPiece.PieceType.KNIGHT));
-                    moves.add(new ChessMove(position, leftDiagPos, ChessPiece.PieceType.ROOK));
-                    moves.add(new ChessMove(position, leftDiagPos, ChessPiece.PieceType.QUEEN));
-                }
-                else {
+                if (position.getRow() == 7) {
+                    ChessPiece.PieceType[] pieceTypes = {
+                            ChessPiece.PieceType.BISHOP,
+                            ChessPiece.PieceType.KNIGHT,
+                            ChessPiece.PieceType.ROOK,
+                            ChessPiece.PieceType.QUEEN
+                    };
+                    for (ChessPiece.PieceType pieceType : pieceTypes) {
+                        moves.add(new ChessMove(position, leftDiagPos, pieceType));
+                    }
+                } else {
                     moves.add(new ChessMove(position, leftDiagPos, null));
                 }
             }
