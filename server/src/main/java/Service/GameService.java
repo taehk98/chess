@@ -12,6 +12,7 @@ import server.JoinRequest;
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class GameService {
@@ -52,7 +53,7 @@ public class GameService {
         }
     }
 
-    public ArrayList<GameData> listGame(AuthData auth) throws DataAccessException {
+    public GameData[] listGame(AuthData auth) throws DataAccessException {
         AuthData currAuth = memoryAuthDAO.getAuth(auth);
         if(currAuth == null) {
             throw new DataAccessException("Error: unauthorized");

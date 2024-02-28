@@ -10,6 +10,7 @@ import spark.Request;
 import spark.Response;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class GameServerHandlers {
@@ -50,12 +51,16 @@ public class GameServerHandlers {
     Object listGameHandler(Request req, Response res) {
         errorRes = new RegisterRes();
         var auth = req.headers("authorization");
+        ListGameResponse gameLists = new ListGameResponse();
         var emptyName = "";
         AuthData authData = new AuthData(auth, emptyName);
         try{
-            ArrayList<GameData> games = gameService.listGame(authData);
+            GameData[] games = gameService.listGame(authData);
             res.status(200);
-            return new Gson().toJson(games);
+            if(games != null){
+                gameLists.setGameList(games);
+                return new Gson().toJson(gameLists);
+            }
         } catch (DataAccessException e) {
             handleDataAccessException(e, res);
         }
