@@ -13,174 +13,39 @@ public class QueenMovesCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
 
-        int temptRow;
+        addMovesInDirection(board, position, moves, 1, 0);  // up
+        addMovesInDirection(board, position, moves, -1, 0); // down
+        addMovesInDirection(board, position, moves, 0, 1);  // right
+        addMovesInDirection(board, position, moves, 0, -1); // left
+        addMovesInDirection(board, position, moves, 1, 1);  // top right
+        addMovesInDirection(board, position, moves, 1, -1); // top left
+        addMovesInDirection(board, position, moves, -1, 1); // bottom right
+        addMovesInDirection(board, position, moves, -1, -1);// bottom left
 
-        temptRow = position.getRow();
-        for (int i = position.getColumn() + 1; i <= 8; i++) {
-            temptRow--;
-            if (temptRow < 1) {
-                break;
-            }
-            ChessPosition pos = new ChessPosition(temptRow, i);
-            if (pos.getRow() <= 8 && pos.getRow() >= 1 && board.getPiece(pos) == null) {
-                ChessMove move = new ChessMove(position, pos, null);
-                moves.add(move);
-            } // When there is no piece, add the move
-            else if (board.getPiece(pos) != null && (
-                    board.getPiece(pos).getTeamColor() == board.getPiece(position).getTeamColor())) {
-                break;
-            } // When there is one of my pieces
-            else if (board.getPiece(pos) != null && (board.getPiece(pos).getTeamColor()
-                    != board.getPiece(position).getTeamColor())) {
-                ChessMove move = new ChessMove(position, pos, null);
-                moves.add(move);
-                break;
-            } // When there is an enemy's piece, add the move and end the loop;
-        } // bottom right diagonal
-
-
-        temptRow = position.getRow();
-        for (int i = position.getColumn() + 1; i <= 8; i++) {
-            temptRow++;
-            if (temptRow > 8) {
-                break;
-            }
-            ChessPosition pos2 = new ChessPosition(temptRow, i);
-            if (pos2.getRow() <= 8 && pos2.getRow() >= 1
-                    && board.getPiece(pos2) == null) {
-                ChessMove move = new ChessMove(position, pos2, null);
-                moves.add(move);
-            } // When there is no piece, add the move
-            else if (board.getPiece(pos2) != null && (
-                    board.getPiece(pos2).getTeamColor() ==
-                            board.getPiece(position).getTeamColor())) {
-
-                break;
-            } // When there is one of my pieces
-            else if (board.getPiece(pos2) != null &&
-                    (board.getPiece(pos2).getTeamColor()
-                            != board.getPiece(position).getTeamColor())) {
-                ChessMove move = new ChessMove(position, pos2, null);
-                moves.add(move);
-                break;
-//            } // When there is an enemy's piece, add the move and end the loop;
-            } // top right diagonal
-        }
-
-        temptRow = position.getRow();
-
-        for (int i = position.getColumn() - 1; i >= 1; i--) {
-            temptRow--;
-            if (temptRow < 1) {
-                break;
-            }
-            ChessPosition pos3 = new ChessPosition(temptRow, i);
-            if (pos3.getRow() >= 1 && pos3.getRow() <= 8 && board.getPiece(pos3) == null) {
-                ChessMove move = new ChessMove(position, pos3, null);
-                moves.add(move);
-            } // When there is no piece, add the move
-            else if (board.getPiece(pos3) != null && (
-                    board.getPiece(pos3).getTeamColor() == board.getPiece(position).getTeamColor())) {
-                break;
-            } // When there is one of my pieces
-            else if (board.getPiece(pos3) != null && (board.getPiece(pos3).getTeamColor() != board.getPiece(position).getTeamColor())) {
-                ChessMove move = new ChessMove(position, pos3, null);
-                moves.add(move);
-                break;
-            } // When there is an enemy's piece, add the move and end the loop;
-        } // bottom left diagonal
-
-        temptRow = position.getRow();
-        for (int i = position.getColumn() - 1; i >= 1; i--) {
-            temptRow++;
-            if (temptRow > 8) {
-                break;
-            }
-            ChessPosition pos4 = new ChessPosition(temptRow, i);
-            if (pos4.getRow() <= 8 && pos4.getRow() >= 1 && board.getPiece(pos4) == null) {
-                ChessMove move = new ChessMove(position, pos4, null);
-                moves.add(move);
-            } // When there is no piece, add the move
-            else if (board.getPiece(pos4) != null && (
-                    board.getPiece(pos4).getTeamColor() == board.getPiece(position).getTeamColor())) {
-                break;
-            } // When there is one of my pieces
-            else if (board.getPiece(pos4) != null && (board.getPiece(pos4).getTeamColor() != board.getPiece(position).getTeamColor())) {
-                ChessMove move = new ChessMove(position, pos4, null);
-                moves.add(move);
-                break;
-                // When there is an enemy's piece, add the move and end the loop;
-            } // top left diagonal
-        }
-
-        //up
-        for (int i = position.getRow() + 1; i <= 8; i++) {
-
-            ChessPosition pos = new ChessPosition(i, position.getColumn());
-            if (board.getPiece(pos) == null) {
-                moves.add(new ChessMove(position, pos, null));
-            } else if (board.getPiece(pos) != null
-                    && (board.getPiece(pos).getTeamColor()
-                    != board.getPiece(position).getTeamColor())) {
-                moves.add(new ChessMove(position, pos, null));
-                break;
-            } else if (board.getPiece(pos) != null
-                    && (board.getPiece(pos).getTeamColor()
-                    == board.getPiece(position).getTeamColor())) {
-                break;
-            }
-        }
-
-        //down
-        for (int i = position.getRow() - 1; i >= 1; i--) {
-            ChessPosition pos = new ChessPosition(i, position.getColumn());
-            if (board.getPiece(pos) == null) {
-                moves.add(new ChessMove(position, pos, null));
-            } else if (board.getPiece(pos) != null
-                    && (board.getPiece(pos).getTeamColor()
-                    != board.getPiece(position).getTeamColor())) {
-                moves.add(new ChessMove(position, pos, null));
-                break;
-            } else if ((board.getPiece(pos) != null
-                    && (board.getPiece(pos).getTeamColor()
-                    == board.getPiece(position).getTeamColor()))) {
-                break;
-            }
-        }
-
-        //right
-        for (int j = position.getColumn() + 1; j <= 8; j++) {
-            ChessPosition pos = new ChessPosition(position.getRow(), j);
-            if (board.getPiece(pos) == null) {
-                moves.add(new ChessMove(position, pos, null));
-            } else if (board.getPiece(pos) != null
-                    && (board.getPiece(pos).getTeamColor()
-                    != board.getPiece(position).getTeamColor())) {
-                moves.add(new ChessMove(position, pos, null));
-                break;
-            } else if ((board.getPiece(pos) != null
-                    && (board.getPiece(pos).getTeamColor()
-                    == board.getPiece(position).getTeamColor()))) {
-                break;
-            }
-        }
-
-        //left
-        for (int k = position.getColumn() - 1; k >= 1; k--) {
-            ChessPosition pos = new ChessPosition(position.getRow(), k);
-            if (board.getPiece(pos) == null) {
-                moves.add(new ChessMove(position, pos, null));
-            } else if (board.getPiece(pos) != null
-                    && (board.getPiece(pos).getTeamColor()
-                    != board.getPiece(position).getTeamColor())) {
-                moves.add(new ChessMove(position, pos, null));
-                break;
-            } else if ((board.getPiece(pos) != null
-                    && (board.getPiece(pos).getTeamColor()
-                    == board.getPiece(position).getTeamColor()))) {
-                break;
-            }
-        }
         return moves;
+    }
+
+    // 해당 방향으로 이동 가능한 모든 위치를 추가하는 메서드
+    private void addMovesInDirection(ChessBoard board, ChessPosition position, Collection<ChessMove> moves, int dr, int dc) {
+        int newRow = position.getRow() + dr;
+        int newCol = position.getColumn() + dc;
+        while (isValidPosition(newRow, newCol)) {
+            ChessPosition newPos = new ChessPosition(newRow, newCol);
+            if (board.getPiece(newPos) == null) {
+                moves.add(new ChessMove(position, newPos, null));
+            } else {
+                if (board.getPiece(newPos).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                    moves.add(new ChessMove(position, newPos, null));
+                }
+                break;
+            }
+            newRow += dr;
+            newCol += dc;
+        }
+    }
+
+    // 유효한 체스 위치인지 확인하는 메서드
+    private boolean isValidPosition(int row, int col) {
+        return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
 }
