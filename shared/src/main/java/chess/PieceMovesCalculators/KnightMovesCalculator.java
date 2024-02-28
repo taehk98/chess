@@ -13,50 +13,24 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
 
-        for(int i = position.getRow()-2; i <= position.getRow()+2; i += 2) {
-            if(i != position.getRow() && i <= 8 && i >= 1){
-                ChessPosition pos = new ChessPosition(i, position.getColumn()-1);
-                if(position.getColumn() - 1 >= 1){
-                    if (board.getPiece(pos) == null || (board.getPiece(pos) != null
-                            && (board.getPiece(pos).getTeamColor()
-                            != board.getPiece(position).getTeamColor()))) {
-                        moves.add(new ChessMove(position, pos, null));
-                    }
-                }
+        addKnightMove(board, position, position.getRow() - 2, position.getColumn() - 1, moves);
+        addKnightMove(board, position, position.getRow() - 2, position.getColumn() + 1, moves);
+        addKnightMove(board, position, position.getRow() + 2, position.getColumn() - 1, moves);
+        addKnightMove(board, position, position.getRow() + 2, position.getColumn() + 1, moves);
+        addKnightMove(board, position, position.getRow() - 1, position.getColumn() - 2, moves);
+        addKnightMove(board, position, position.getRow() - 1, position.getColumn() + 2, moves);
+        addKnightMove(board, position, position.getRow() + 1, position.getColumn() - 2, moves);
+        addKnightMove(board, position, position.getRow() + 1, position.getColumn() + 2, moves);
 
-                pos = new ChessPosition(i, position.getColumn()+1);
-                if(position.getColumn() + 1 <= 8) {
-                    if (board.getPiece(pos) == null || (board.getPiece(pos) != null
-                            && (board.getPiece(pos).getTeamColor()
-                            != board.getPiece(position).getTeamColor()))) {
-                        moves.add(new ChessMove(position, pos, null));
-                    }
-                }
-            }
-        }
-
-        for(int j = position.getColumn()-2; j <= position.getColumn()+2; j += 2){
-            if(j != position.getColumn() && j <= 8 && j >= 1){
-                ChessPosition pos = new ChessPosition(position.getRow()-1, j);
-                if(position.getRow() -1 >= 1){
-                    if(board.getPiece(pos) == null || (board.getPiece(pos) != null
-                            && (board.getPiece(pos).getTeamColor()
-                            != board.getPiece(position).getTeamColor()))){
-                        moves.add(new ChessMove(position, pos, null));
-                    }
-                }
-
-                pos = new ChessPosition( position.getRow()+1, j);
-                if(position.getRow() +1 <= 8){
-                    if(board.getPiece(pos) == null || (board.getPiece(pos) != null
-                            && (board.getPiece(pos).getTeamColor()
-                            != board.getPiece(position).getTeamColor()))){
-                        moves.add(new ChessMove(position, pos, null));
-                    }
-                }
-            }
-        }
         return moves;
     }
 
+    private void addKnightMove(ChessBoard board, ChessPosition from, int toRow, int toColumn, Collection<ChessMove> moves) {
+        ChessPosition to = new ChessPosition(toRow, toColumn);
+        if (toRow >= 1 && toRow <= 8 && toColumn >= 1 && toColumn <= 8) {
+            if (board.getPiece(to) == null || board.getPiece(to).getTeamColor() != board.getPiece(from).getTeamColor()) {
+                moves.add(new ChessMove(from, to, null));
+            }
+        }
+    }
 }
