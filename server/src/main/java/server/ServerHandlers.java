@@ -5,7 +5,6 @@ import Service.UserService;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 import spark.Request;
 import spark.Response;
@@ -85,26 +84,4 @@ public class ServerHandlers {
         return new Gson().toJson(errorRes);
     }
 
-    Object createGameHandler(Request req, Response res) {
-        errorRes = new RegisterRes();
-        CreateGameResponse successResponse = new CreateGameResponse();
-        var auth = req.headers("authorization");
-        var gameName = new Gson().fromJson(req.body(), GameData.class);
-        try{
-            int gameID = gameService.createGame(auth, gameName);
-            res.status(200);
-            successResponse.setGameID(gameID);
-            return new Gson().toJson(successResponse);
-        } catch (DataAccessException e) {
-           if(e.getMessage().equals("Error: bad request")){
-               res.status(400);
-           } else if(e.getMessage().equals("Error: unauthorized")) {
-               res.status(401);
-           } else{
-               res.status(500);
-           }
-           errorRes.setMessage(e.getMessage());
-        }
-        return new Gson().toJson(errorRes);
-    }
 }

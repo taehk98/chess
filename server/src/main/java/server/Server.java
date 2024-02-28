@@ -5,8 +5,10 @@ import spark.Spark;
 public class Server {
 
     private final ServerHandlers serverHandlers;
+    private final GameServerHandlers gameHandlers;
 
     public Server() {
+        this.gameHandlers = new GameServerHandlers();
         this.serverHandlers = new ServerHandlers();
     }
 
@@ -20,7 +22,9 @@ public class Server {
         Spark.post("/user", serverHandlers::registerHandler);
         Spark.delete("/db", serverHandlers::clearHandler);
         Spark.delete("/session", serverHandlers::logoutHandler);
-        Spark.post("/game", serverHandlers::createGameHandler);
+        Spark.post("/game", gameHandlers::createGameHandler);
+        Spark.put("/game", gameHandlers::joinGameHandler);
+        Spark.get("/game", gameHandlers::listGameHandler);
 
 
         Spark.awaitInitialization();
