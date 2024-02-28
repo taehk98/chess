@@ -7,12 +7,13 @@ import model.GameData;
 import java.util.*;
 
 public class MemoryGameDAO implements GameDAO {
-    private int nextId = 1;
+    private static int nextId = 1;
     static final private HashMap<Integer, GameData> games = new HashMap<>();
 
     @Override
     public void clear() throws DataAccessException {
         games.clear();
+        nextId = 1;
     }
 
     @Override

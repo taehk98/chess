@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
@@ -109,13 +110,17 @@ class UserServiceTest {
     }
 
     @Test
-    void clear() throws DataAccessException {
+    void clear_positiveCase() throws DataAccessException {
         UserData validUserData = new UserData("validUsername", "validEmail", "validPassword");
-        AuthData authData = userService.register(validUserData);
+        userService.register(validUserData);
         UserData returnedUser = memoryUserDAO.getUser(validUserData);
         assertNotNull(returnedUser);
         userService.clear();
         UserData user = memoryUserDAO.getUser(validUserData);
         assertNull(user);
+    }
+    @Test
+    void clear_negativeCase() throws DataAccessException {
+
     }
 }
