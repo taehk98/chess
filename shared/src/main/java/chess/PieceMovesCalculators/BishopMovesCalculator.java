@@ -35,7 +35,7 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
                 break;
             } // When there is an enemy's piece, add the move and end the loop;
         } // bottom right diagonal
-        
+
         temptRow = position.getRow();
         for (int i = position.getColumn()+1; i <= 8; i++) {
             temptRow++;
