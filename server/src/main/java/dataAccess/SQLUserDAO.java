@@ -18,7 +18,6 @@ public class SQLUserDAO implements UserDAO{
         try(var conn = DatabaseManager.getConnection()){
             DatabaseManager.createDatabase();
 
-            conn.setCatalog("chess");
 
             var createAuthTokenTable ="""
               CREATE TABLE IF NOT EXISTS user(

@@ -24,8 +24,6 @@ public class SQLGameDAO implements GameDAO{
         try(var conn = DatabaseManager.getConnection()){
             DatabaseManager.createDatabase();
 
-            conn.setCatalog("chess");
-
             var createAuthTokenTable ="""
               CREATE TABLE IF NOT EXISTS game(
                   gameID INT NOT NULL AUTO_INCREMENT,

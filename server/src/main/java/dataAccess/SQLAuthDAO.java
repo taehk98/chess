@@ -24,8 +24,6 @@ public class SQLAuthDAO implements AuthDAO{
         try(var conn = DatabaseManager.getConnection()){
             DatabaseManager.createDatabase();
 
-            conn.setCatalog("chess");
-
             var createAuthTokenTable ="""
               CREATE TABLE IF NOT EXISTS auth(
                   authToken VARCHAR(255) NOT NULL,
