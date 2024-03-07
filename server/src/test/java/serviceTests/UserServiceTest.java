@@ -1,36 +1,44 @@
 package serviceTests;
 
 import Service.UserService;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import model.AuthData;
 import model.UserData;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import passoffTests.obfuscatedTestClasses.TestServerFacade;
+import passoffTests.testClasses.TestModels;
+import server.Server;
 
+
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
     private UserService userService;
-    private MemoryUserDAO memoryUserDAO;
-    private MemoryAuthDAO memoryAuthDAO;
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
 
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(); // UserService 객체 초기화
-        memoryUserDAO = new MemoryUserDAO();
-        memoryAuthDAO = new MemoryAuthDAO();
+        userService = new UserService();
+        try(var conn = DatabaseManager.getConnection()) {
+            userDAO = new SQLUserDAO();
+            authDAO = new SQLAuthDAO();
+        } catch (SQLException | DataAccessException e) {
+            userDAO = new MemoryUserDAO();
+            authDAO = new MemoryAuthDAO();
+        }
+        // UserService 객체 초기화
+
         // 테스트 시작 전에 users 해시맵을 초기화합니다.
     }
 
     @AfterEach
     void tearDown() throws DataAccessException {
-        memoryUserDAO.clear();
-        memoryAuthDAO.clear();
+        userDAO.clear();
+        authDAO.clear();
     }
 
 
@@ -88,12 +96,12 @@ class UserServiceTest {
     void logout_positiveCase() throws DataAccessException {
         UserData validUserData = new UserData("validUsername", "validEmail", "validPassword");
         AuthData authData = userService.register(validUserData);
-        AuthData returnedAuth = memoryAuthDAO.getAuth(authData);
+        AuthData returnedAuth = authDAO.getAuth(authData);
         assertNotNull(returnedAuth);
 
         userService.logout(authData);
 
-        AuthData auth = memoryAuthDAO.getAuth(authData);
+        AuthData auth = authDAO.getAuth(authData);
         assertNull(auth);
     }
     @Test
@@ -113,10 +121,10 @@ class UserServiceTest {
     void clear_positiveCase() throws DataAccessException {
         UserData validUserData = new UserData("validUsername", "validEmail", "validPassword");
         userService.register(validUserData);
-        UserData returnedUser = memoryUserDAO.getUser(validUserData);
+        UserData returnedUser = userDAO.getUser(validUserData);
         assertNotNull(returnedUser);
         userService.clear();
-        UserData user = memoryUserDAO.getUser(validUserData);
+        UserData user = userDAO.getUser(validUserData);
         assertNull(user);
     }
     @Test

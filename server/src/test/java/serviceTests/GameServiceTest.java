@@ -3,10 +3,7 @@ package serviceTests;
 import Service.GameService;
 import Service.UserService;
 import chess.ChessGame;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryGameDAO;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -14,6 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.JoinRequest;
+
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,21 +23,33 @@ class GameServiceTest {
     private MemoryAuthDAO memoryAuthDAO;
     private MemoryGameDAO memoryGameDAO;
     private UserService userService;
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
 
     @BeforeEach
     void setUp() {
-        memoryUserDAO = new MemoryUserDAO();
-        memoryAuthDAO = new MemoryAuthDAO();
-        memoryGameDAO = new MemoryGameDAO();
-        userService = new UserService();
         gameService = new GameService();
+        userService = new UserService();
+        try(var conn = DatabaseManager.getConnection()) {
+            userDAO = new SQLUserDAO();
+            authDAO = new SQLAuthDAO();
+            gameDAO = new SQLGameDAO();
+            gameDAO.clear();
+            userDAO.clear();
+            authDAO.clear();
+        } catch (SQLException | DataAccessException e) {
+            userDAO = new MemoryUserDAO();
+            authDAO = new MemoryAuthDAO();
+            gameDAO = new MemoryGameDAO();
+        }
     }
 
     @AfterEach
     void tearDown() throws DataAccessException {
-        memoryGameDAO.clear();
-        memoryUserDAO.clear();
-        memoryAuthDAO.clear();
+        gameDAO.clear();
+        userDAO.clear();
+        authDAO.clear();
     }
 
     @Test
@@ -109,7 +120,9 @@ class GameServiceTest {
         GameData game = new GameData(12345, null,null,"validGameName",chessGame);
         int gameID = gameService.createGame(authData, game);
         GameData[] games = gameService.listGame(authData);
-
+        for (GameData g : games) {
+            System.out.println(g);
+        }
         assertEquals(games.length, 1);
     }
     @Test
