@@ -22,8 +22,7 @@ public class SQLGameDAO implements GameDAO{
     }
     public void createTable()throws DataAccessException{
         try(var conn = DatabaseManager.getConnection()){
-            var createDbStatement = conn.prepareStatement("CREATE DATABASE IF NOT EXISTS chess");
-            createDbStatement.executeUpdate();
+            DatabaseManager.createDatabase();
 
             conn.setCatalog("chess");
 
