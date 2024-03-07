@@ -120,13 +120,13 @@ public class SQLGameDAO implements GameDAO{
     public void updateGame(AuthData currAuth, int gameID, String playerColor) throws DataAccessException {
         GameData currGame = getGame(gameID);
         GameData newGame = null;
-        if (playerColor != null && playerColor.equals("WHITE")) {
+        if (playerColor != null && playerColor.equals("WHITE") && currGame != null) {
             if (currGame.whiteUsername() == null) {
                 newGame = new GameData(gameID, currAuth.username(), currGame.blackUsername(), currGame.gameName(), currGame.game());
             } else {
                 throw new DataAccessException("Error: already taken");
             }
-        } else if (playerColor != null && playerColor.equals("BLACK")) {
+        } else if (playerColor != null && playerColor.equals("BLACK") && currGame != null) {
             if (currGame.blackUsername() == null) {
                 newGame = new GameData(gameID, currGame.whiteUsername(), currAuth.username(), currGame.gameName(), currGame.game());
             }else {
@@ -134,6 +134,8 @@ public class SQLGameDAO implements GameDAO{
             }
         } else if (playerColor == null) {
             newGame = currGame;
+        } else if (currGame == null) {
+            throw new DataAccessException("Error: bad request"); //임의로 넣은 에러임
         }
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, chessGame = ? WHERE gameID = ?";
