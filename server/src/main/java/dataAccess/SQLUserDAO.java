@@ -9,38 +9,65 @@ import java.sql.SQLException;
 public class SQLUserDAO implements UserDAO{
     public SQLUserDAO(){
         try {
-            configureDatabase();
+//            configureDatabase();
+            createTable();
         } catch (DataAccessException e) {
         }
     }
+    public void createTable() throws DataAccessException{
+        try(var conn = DatabaseManager.getConnection()){
+            var createDbStatement = conn.prepareStatement("CREATE DATABASE IF NOT EXISTS chess");
+            createDbStatement.executeUpdate();
 
+            conn.setCatalog("chess");
+
+            var createAuthTokenTable ="""
+              CREATE TABLE IF NOT EXISTS user(
+                  email VARCHAR(255) NOT NULL,
+                  password VARCHAR(255) NOT NULL,
+                  username VARCHAR(255) NOT NULL,
+                  PRIMARY KEY (username)
+              )""";
+
+            try(var createTableStatement = conn.prepareStatement(createAuthTokenTable)){
+                createTableStatement.executeUpdate();
+            }
+        }catch(SQLException e){
+            throw new DataAccessException("Data Access Error");
+        }
+    }
     @Override
     public UserData getUser(UserData userData) throws DataAccessException {
+        UserData user = null;
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, json FROM user WHERE username=?";
+            var statement = "SELECT username, password, email FROM user WHERE username=?";
+//            var statement = "SELECT username, json FROM user WHERE username=?";
             try( var ps = conn.prepareStatement(statement) ){
                 ps.setString(1, userData.username());
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readUser(rs);
+                        user = new UserData(rs.getString("username"),rs.getString("password"), rs.getString("email"));
                     }
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Error retrieving user");
+            return null;
         }
-        return null;
+            return user;
     }
 
     @Override
     public UserData createUser(UserData userData) throws DataAccessException {
-        var json = new Gson().toJson(userData);
-        try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement("INSERT INTO user (username, json) VALUES (?, ?)")) {
-            preparedStatement.setString(1, userData.username());
-            preparedStatement.setString(2, json);
-            preparedStatement.executeUpdate();
-            return userData;
+//        var json = new Gson().toJson(userData);
+        try (var conn = DatabaseManager.getConnection()) {
+            try(var preparedStatement = conn.prepareStatement("INSERT INTO user (username, password, email) VALUES (?, ?, ?)")) {
+                preparedStatement.setString(1, userData.username());
+                preparedStatement.setString(2, userData.password());
+                preparedStatement.setString(3, userData.email());
+                preparedStatement.executeUpdate();
+                return userData;
+        }
+
         } catch (SQLException e) {
             throw new DataAccessException("Error creating user");
         }
@@ -61,17 +88,17 @@ public class SQLUserDAO implements UserDAO{
         return new Gson().fromJson(json, UserData.class);
     }
 
-    private final String[] createStatements = {
-            """
-                  CREATE TABLE IF NOT EXISTS user(
-                  username VARCHAR(255) NOT NULL,
-                  password VARCHAR(255) NOT NULL,
-                  email VARCHAR(255) NOT NULL,
-                  PRIMARY KEY (username)
-                  )"""
-    };
+
+
 
     private void configureDatabase() throws DataAccessException {
+        var createStatements =
+                """
+                      CREATE TABLE IF NOT EXISTS user(
+                      username VARCHAR(255) NOT NULL,
+                      json TEXT DEFAULT NULL,
+                      PRIMARY KEY (username)
+                      )""";
         SQLAuthDAO.configureDatabase(createStatements);
     }
 }

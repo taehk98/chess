@@ -3,6 +3,7 @@ package Service;
 import dataAccess.*;
 import model.AuthData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserService {
     private final UserDAO userDAO = new SQLUserDAO();
@@ -19,9 +20,13 @@ public class UserService {
         if(user.username() == null || user.email() == null || user.password() == null){
             throw new DataAccessException("Error: bad request");
         }
-        returnedUser = userDAO.getUser(user);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(user.password());
+        UserData hashedUser = new UserData(user.username(), hashedPassword, user.email());
+
+        returnedUser = userDAO.getUser(hashedUser);
         if(returnedUser == null){
-            createdUser = userDAO.createUser(user);
+            createdUser = userDAO.createUser(hashedUser);
         }else {
             throw new DataAccessException("Error: already taken");
         }
@@ -31,8 +36,10 @@ public class UserService {
     public AuthData login(UserData user) throws DataAccessException {
         AuthData returnedAuth;
         UserData returnedUser;
+
         returnedUser = userDAO.getUser(user);
-        if (returnedUser != null) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (returnedUser != null && encoder.matches(user.password(), returnedUser.password())) {
             returnedAuth = authDAO.createAuth(user.username());
         }else {
             throw new DataAccessException("Error: unauthorized");

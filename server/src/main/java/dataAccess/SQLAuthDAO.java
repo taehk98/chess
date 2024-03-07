@@ -9,28 +9,51 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 public class SQLAuthDAO implements AuthDAO{
 
     public SQLAuthDAO()  {
         try {
-            configureDatabase();
+//            configureDatabase();
+            createTable();
         } catch (DataAccessException e) {
+        }
+    }
+    public void createTable()throws DataAccessException{
+        try(var conn = DatabaseManager.getConnection()){
+            var createDbStatement = conn.prepareStatement("CREATE DATABASE IF NOT EXISTS chess");
+            createDbStatement.executeUpdate();
+
+            conn.setCatalog("chess");
+
+            var createAuthTokenTable ="""
+              CREATE TABLE IF NOT EXISTS auth(
+                  authToken VARCHAR(255) NOT NULL,
+                  username VARCHAR(255) NOT NULL,
+                  PRIMARY KEY (authToken)
+              )""";
+
+            try(var createTableStatement = conn.prepareStatement(createAuthTokenTable)){
+                createTableStatement.executeUpdate();
+            }
+        }catch(SQLException e){
+            throw new DataAccessException("Data Access Error");
         }
     }
     @Override
     public AuthData createAuth(String username) throws DataAccessException {
-        String authToken = UUID.randomUUID().toString();
-        AuthData newAuth = new AuthData(authToken, username);
-        var json = new Gson().toJson(newAuth);
-        try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement("INSERT INTO auth (username, json) VALUES (?, ?)")) {
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, json);
+        String token = UUID.randomUUID().toString();
+        var conn = DatabaseManager.getConnection();
+        try(var preparedStatement = conn.prepareStatement("INSERT INTO auth (authToken, username) VALUES(?, ?)")){
+            preparedStatement.setString(1, token);
+            preparedStatement.setString(2, username);
             preparedStatement.executeUpdate();
-            return newAuth;
+            conn.close();
         } catch (SQLException e) {
-            throw new DataAccessException("Error creating user");
+            throw new DataAccessException("Error: Data Access Exception");
         }
+        return new AuthData(token, username);
     }
 
     @Override
@@ -57,11 +80,11 @@ public class SQLAuthDAO implements AuthDAO{
     @Override
     public AuthData getAuth(AuthData user) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement("SELECT authToken, json FROM auth WHERE authToken=?");
+            var ps = conn.prepareStatement("SELECT authToken, username FROM auth WHERE authToken=?");
             ps.setString(1, user.authToken());
             try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return readAuth(rs);
+                    return new AuthData(rs.getString("authToken"), rs.getString("username"));
                 }
             }
         } catch (SQLException e) {
@@ -75,28 +98,25 @@ public class SQLAuthDAO implements AuthDAO{
         return new Gson().fromJson(json, AuthData.class);
     }
 
-    private final String[] createStatements = {
-            """
-                  CREATE TABLE IF NOT EXISTS auth(
+
+    private void configureDatabase() throws DataAccessException {
+        var createStatements ="""
+                   CREATE TABLE IF NOT EXISTS auth(
                   authToken VARCHAR(255) NOT NULL,
                   json TEXT DEFAULT NULL,
                   PRIMARY KEY (authToken)
-                  )"""
-    };
-
-    private void configureDatabase() throws DataAccessException {
+                  )""";
         configureDatabase(createStatements);
     }
 
-    static void configureDatabase(String[] createStatements) throws DataAccessException {
-        DatabaseManager.createDatabase();
+    static void configureDatabase(String createStatements) throws DataAccessException {
+
         try (var conn = DatabaseManager.getConnection()) {
+            DatabaseManager.createDatabase();
             conn.setCatalog("chess");
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
+                try (var preparedStatement = conn.prepareStatement(createStatements)) {
                     preparedStatement.executeUpdate();
                 }
-            }
         } catch (SQLException ex) {
             throw new DataAccessException("Unable to configure database");
         }

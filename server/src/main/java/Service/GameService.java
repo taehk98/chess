@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 
 public class GameService {
-    private final UserDAO userDAO = new SQLUserDAO();
     private final AuthDAO authDAO = new SQLAuthDAO();
     static final GameDAO gameDAO = new SQLGameDAO();
 
