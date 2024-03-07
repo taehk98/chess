@@ -137,7 +137,6 @@ public class SQLGameDAO implements GameDAO{
         } else if (playerColor == null) {
             newGame = currGame;
         }
-
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, chessGame = ? WHERE gameID = ?";
             Gson gson = new Gson();
