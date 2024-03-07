@@ -83,22 +83,19 @@ public class SQLUserDAO implements UserDAO{
         }
     }
 
-    private UserData readUser(ResultSet rs) throws SQLException {
-        var json = rs.getString("json");
-        return new Gson().fromJson(json, UserData.class);
-    }
-
-
-
-
-    private void configureDatabase() throws DataAccessException {
-        var createStatements =
-                """
-                      CREATE TABLE IF NOT EXISTS user(
-                      username VARCHAR(255) NOT NULL,
-                      json TEXT DEFAULT NULL,
-                      PRIMARY KEY (username)
-                      )""";
-        SQLAuthDAO.configureDatabase(createStatements);
-    }
+//    private UserData readUser(ResultSet rs) throws SQLException {
+//        var json = rs.getString("json");
+//        return new Gson().fromJson(json, UserData.class);
+//    }
+//
+//    private void configureDatabase() throws DataAccessException {
+//        var createStatements =
+//                """
+//                      CREATE TABLE IF NOT EXISTS user(
+//                      username VARCHAR(255) NOT NULL,
+//                      json TEXT DEFAULT NULL,
+//                      PRIMARY KEY (username)
+//                      )""";
+//        SQLAuthDAO.configureDatabase(createStatements);
+//    }
 }
