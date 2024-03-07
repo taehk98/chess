@@ -21,8 +21,9 @@ public class SQLAuthDAO implements AuthDAO{
         }
     }
     public void createTable()throws DataAccessException{
+        DatabaseManager.createDatabase();
         try(var conn = DatabaseManager.getConnection()){
-            DatabaseManager.createDatabase();
+
 
             var createAuthTokenTable ="""
               CREATE TABLE IF NOT EXISTS auth(

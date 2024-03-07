@@ -21,8 +21,8 @@ public class SQLGameDAO implements GameDAO{
         }
     }
     public void createTable()throws DataAccessException{
+        DatabaseManager.createDatabase();
         try(var conn = DatabaseManager.getConnection()){
-            DatabaseManager.createDatabase();
 
             var createAuthTokenTable ="""
               CREATE TABLE IF NOT EXISTS game(

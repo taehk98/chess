@@ -15,8 +15,9 @@ public class SQLUserDAO implements UserDAO{
         }
     }
     public void createTable() throws DataAccessException{
+        DatabaseManager.createDatabase();
         try(var conn = DatabaseManager.getConnection()){
-            DatabaseManager.createDatabase();
+
 
 
             var createAuthTokenTable ="""
