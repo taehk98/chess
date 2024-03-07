@@ -1,16 +1,13 @@
 package Service;
 
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryGameDAO;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import model.AuthData;
 import model.UserData;
 
 public class UserService {
-    static final MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
-    static final MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
-    static final MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
+    static final UserDAO memoryUserDAO = new MemoryUserDAO();
+    static final AuthDAO memoryAuthDAO = new MemoryAuthDAO();
+    static final GameDAO memoryGameDAO = new MemoryGameDAO();
 
     public UserService() {
     }

@@ -2,10 +2,12 @@ package server;
 
 import model.GameData;
 
-public class ListGameResponse {
-    private GameData[] games;
+import java.util.ArrayList;
 
-    public void setGameList(GameData[] games) {
+public class ListGameResponse {
+    private ArrayList<GameData> games;
+
+    public void setGameList(ArrayList<GameData> games) {
         this.games = games;
     }
 }

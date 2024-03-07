@@ -1,10 +1,7 @@
 package Service;
 
 import chess.ChessPiece;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryGameDAO;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import server.JoinRequest;
@@ -16,9 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 
 public class GameService {
-    static final MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
-    static final MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
-    static final MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
+    static final UserDAO memoryUserDAO = new MemoryUserDAO();
+    static final AuthDAO memoryAuthDAO = new MemoryAuthDAO();
+    static final GameDAO memoryGameDAO = new MemoryGameDAO();
 
     public GameService(){
     }
@@ -53,7 +50,7 @@ public class GameService {
         }
     }
 
-    public GameData[] listGame(AuthData auth) throws DataAccessException {
+    public ArrayList<GameData> listGame(AuthData auth) throws DataAccessException {
         AuthData currAuth = memoryAuthDAO.getAuth(auth);
         if(currAuth == null) {
             throw new DataAccessException("Error: unauthorized");

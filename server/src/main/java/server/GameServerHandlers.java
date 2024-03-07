@@ -55,7 +55,7 @@ public class GameServerHandlers {
         var emptyName = "";
         AuthData authData = new AuthData(auth, emptyName);
         try{
-            GameData[] games = gameService.listGame(authData);
+            ArrayList<GameData> games = gameService.listGame(authData);
             res.status(200);
             if(games != null){
                 gameLists.setGameList(games);

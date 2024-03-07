@@ -30,10 +30,8 @@ public class MemoryGameDAO implements GameDAO {
         return games.get(gameID);
     }
 
-    public GameData[] listGames() throws DataAccessException{
-        GameData[] gameArray = new GameData[games.size()];
-        games.values().toArray(gameArray);
-        return gameArray;
+    public ArrayList<GameData> listGames() throws DataAccessException{
+        return new ArrayList<>(games.values());
     }
 
     public void updateGame(AuthData currAuth, int gameID, String playerColor) throws DataAccessException {
