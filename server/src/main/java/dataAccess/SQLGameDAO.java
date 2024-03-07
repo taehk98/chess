@@ -157,8 +157,6 @@ public class SQLGameDAO implements GameDAO{
 //        return new Gson().fromJson(json, GameData.class);
 //    }
 //
-//
-//
 //    private void configureDatabase() throws DataAccessException {
 //        var createStatements =
 //                """
