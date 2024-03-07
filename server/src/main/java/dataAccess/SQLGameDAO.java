@@ -152,7 +152,6 @@ public class SQLGameDAO implements GameDAO{
             throw new DataAccessException("Error updating Game");
         }
     }
-
 //    private GameData readGame(ResultSet rs) throws SQLException {
 //        var json = rs.getString("json");
 //        return new Gson().fromJson(json, GameData.class);
