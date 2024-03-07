@@ -7,8 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO{
-    public SQLUserDAO() throws DataAccessException{
-       configureDatabase();
+    public SQLUserDAO(){
+        try {
+            configureDatabase();
+        } catch (DataAccessException e) {
+        }
     }
 
     @Override

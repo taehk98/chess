@@ -13,20 +13,20 @@ import java.util.HashSet;
 import java.util.List;
 
 public class GameService {
-    static final UserDAO memoryUserDAO = new MemoryUserDAO();
-    static final AuthDAO memoryAuthDAO = new MemoryAuthDAO();
-    static final GameDAO memoryGameDAO = new MemoryGameDAO();
+    private final UserDAO userDAO = new SQLUserDAO();
+    private final AuthDAO authDAO = new SQLAuthDAO();
+    static final GameDAO gameDAO = new SQLGameDAO();
 
-    public GameService(){
+    public GameService() {
     }
     public int createGame(AuthData auth, GameData game) throws DataAccessException {
         if(game.gameName() == null){
             throw new DataAccessException("Error: bad request");
         }
         AuthData returnedAuth;
-        returnedAuth = memoryAuthDAO.getAuth(auth);
+        returnedAuth = authDAO.getAuth(auth);
         if(returnedAuth != null){
-            return memoryGameDAO.createGame(game);
+            return gameDAO.createGame(game);
         }else {
             throw new DataAccessException("Error: unauthorized");
         }
@@ -37,24 +37,27 @@ public class GameService {
         if (playerColor != null && !playerColor.isEmpty() && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
             throw new DataAccessException("Error: bad request");
         }
-        AuthData currAuth = memoryAuthDAO.getAuth(auth);
+        AuthData currAuth = authDAO.getAuth(auth);
         if(currAuth == null) {
             throw new DataAccessException("Error: unauthorized");
         }
         GameData returnedGame;
-        returnedGame = memoryGameDAO.getGame(joinInfo.getGameID());
+        returnedGame = gameDAO.getGame(joinInfo.getGameID());
         if(returnedGame != null) {
-            memoryGameDAO.updateGame(currAuth, joinInfo.getGameID(), joinInfo.getPlayerColor());
+            gameDAO.updateGame(currAuth, joinInfo.getGameID(), joinInfo.getPlayerColor());
         }else{
             throw new DataAccessException("Error: bad request");
         }
     }
 
-    public ArrayList<GameData> listGame(AuthData auth) throws DataAccessException {
-        AuthData currAuth = memoryAuthDAO.getAuth(auth);
+    public GameData[] listGame(AuthData auth) throws DataAccessException {
+        AuthData currAuth = authDAO.getAuth(auth);
         if(currAuth == null) {
             throw new DataAccessException("Error: unauthorized");
         }
-        return memoryGameDAO.listGames();
+        ArrayList<GameData> gameList = gameDAO.listGames();
+        GameData[] gameArray = new GameData[gameList.size()];
+        gameArray = gameList.toArray(gameArray);
+        return gameArray;
     }
 }

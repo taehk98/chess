@@ -1,15 +1,14 @@
 package server;
 
+import dataAccess.DataAccessException;
 import spark.Spark;
 
 public class Server {
 
-    private final ServerHandlers serverHandlers;
-    private final GameServerHandlers gameHandlers;
+    ServerHandlers serverHandlers = new ServerHandlers();
+    GameServerHandlers gameHandlers = new GameServerHandlers();
 
-    public Server() {
-        this.gameHandlers = new GameServerHandlers();
-        this.serverHandlers = new ServerHandlers();
+    public Server(){
     }
 
     public int run(int desiredPort) {

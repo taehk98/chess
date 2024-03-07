@@ -5,9 +5,9 @@ import model.GameData;
 import java.util.ArrayList;
 
 public class ListGameResponse {
-    private ArrayList<GameData> games;
+    private GameData[] games;
 
-    public void setGameList(ArrayList<GameData> games) {
+    public void setGameList(GameData[] games) {
         this.games = games;
     }
 }

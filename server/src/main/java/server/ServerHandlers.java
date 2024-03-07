@@ -11,7 +11,6 @@ import spark.Response;
 
 public class ServerHandlers {
     UserService userService = new UserService();
-    GameService gameService = new GameService();
     RegisterRes errorRes = new RegisterRes();
 
     Object loginHandler(Request req, Response res) {

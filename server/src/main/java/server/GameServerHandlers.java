@@ -16,6 +16,9 @@ import java.util.List;
 public class GameServerHandlers {
     GameService gameService = new GameService();
     RegisterRes errorRes = new RegisterRes();
+
+    public GameServerHandlers() {
+    }
     Object createGameHandler(Request req, Response res) {
         errorRes = new RegisterRes();
         CreateGameResponse successResponse = new CreateGameResponse();
@@ -55,7 +58,7 @@ public class GameServerHandlers {
         var emptyName = "";
         AuthData authData = new AuthData(auth, emptyName);
         try{
-            ArrayList<GameData> games = gameService.listGame(authData);
+            GameData[] games = gameService.listGame(authData);
             res.status(200);
             if(games != null){
                 gameLists.setGameList(games);

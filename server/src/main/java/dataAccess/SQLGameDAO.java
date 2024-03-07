@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 
-import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,8 +12,11 @@ import java.util.ArrayList;
 public class SQLGameDAO implements GameDAO{
     private static int nextId = 1;
 
-    public SQLGameDAO() throws DataAccessException{
-        configureDatabase();
+    public SQLGameDAO() {
+        try {
+            configureDatabase();
+        } catch (DataAccessException e) {
+        }
     }
 
     @Override
