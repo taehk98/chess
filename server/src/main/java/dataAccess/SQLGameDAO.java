@@ -46,6 +46,7 @@ public class SQLGameDAO implements GameDAO{
         try (var conn = DatabaseManager.getConnection()) {
             var preparedStatement = conn.prepareStatement("TRUNCATE TABLE game");
             preparedStatement.executeUpdate();
+            gameID = 1;
         } catch (SQLException e) {
             throw new DataAccessException("All Game Data Clearing Error");
         }
