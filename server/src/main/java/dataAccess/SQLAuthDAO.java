@@ -99,26 +99,26 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
 
-    private void configureDatabase() throws DataAccessException {
-        var createStatements ="""
-                   CREATE TABLE IF NOT EXISTS auth(
-                  authToken VARCHAR(255) NOT NULL,
-                  json TEXT DEFAULT NULL,
-                  PRIMARY KEY (authToken)
-                  )""";
-        configureDatabase(createStatements);
-    }
-
-    static void configureDatabase(String createStatements) throws DataAccessException {
-
-        try (var conn = DatabaseManager.getConnection()) {
-            DatabaseManager.createDatabase();
-            conn.setCatalog("chess");
-                try (var preparedStatement = conn.prepareStatement(createStatements)) {
-                    preparedStatement.executeUpdate();
-                }
-        } catch (SQLException ex) {
-            throw new DataAccessException("Unable to configure database");
-        }
-    }
+//    private void configureDatabase() throws DataAccessException {
+//        var createStatements ="""
+//                   CREATE TABLE IF NOT EXISTS auth(
+//                  authToken VARCHAR(255) NOT NULL,
+//                  json TEXT DEFAULT NULL,
+//                  PRIMARY KEY (authToken)
+//                  )""";
+//        configureDatabase(createStatements);
+//    }
+//
+//    static void configureDatabase(String createStatements) throws DataAccessException {
+//
+//        try (var conn = DatabaseManager.getConnection()) {
+//            DatabaseManager.createDatabase();
+//            conn.setCatalog("chess");
+//                try (var preparedStatement = conn.prepareStatement(createStatements)) {
+//                    preparedStatement.executeUpdate();
+//                }
+//        } catch (SQLException ex) {
+//            throw new DataAccessException("Unable to configure database");
+//        }
+//    }
 }
