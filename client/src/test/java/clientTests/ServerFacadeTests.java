@@ -2,11 +2,12 @@ package clientTests;
 
 import Client.ServerFacade;
 import dataAccess.DataAccessException;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -34,12 +35,6 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-
-    @Test
-    public void sampleTest() {
-        assertTrue(true);
-    }
-
     @Test
     void posRegister() throws Exception {
         UserData user = new UserData("player3", "password", "p1@email.com");
@@ -55,5 +50,28 @@ public class ServerFacadeTests {
         Assertions.assertNotEquals(authData.username() , "player4");
     }
 
+    @Test
+    void posLogin() throws Exception {
+        UserData user = new UserData("player3", "password", "p1@email.com");
+        facade.addUser(user);
+        AuthData auth = facade.getUser(new UserData("player3", "password", null));
+        Assertions.assertEquals(auth.username(), "player3");
+
+    }
+
+    @Test
+    void negLogin() throws Exception {
+        UserData user = new UserData("player3", "password", "p1@email.com");
+        facade.addUser(user);
+
+        Throwable exception = assertThrows(DataAccessException.class, () -> {
+            AuthData auth = facade.getUser(new UserData("player3", "Wrongpassword", null));
+        });
+
+        String expectedMessage = "Request Error";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
 
 }
