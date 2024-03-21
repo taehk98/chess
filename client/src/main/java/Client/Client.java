@@ -28,10 +28,10 @@ public class Client {
                 case "login" -> logIn(params);
                 case "register" -> register(params);
                 case "quit" -> "quit";
-                case "logout" -> logOut();
-                case "list" -> listGames();
-                case "join" -> joinGame(params);
-                case "create" -> createGame(params);
+//                case "logout" -> logOut();
+//                case "list" -> listGames();
+//                case "join" -> joinGame(params);
+//                case "create" -> createGame(params);
                 default -> help();
             };
         } catch (DataAccessException ex) {
@@ -61,4 +61,23 @@ public class Client {
         throw new DataAccessException("client Register Error");
     }
 
+    public String help() {
+        if (state == State.SIGNEDOUT) {
+            return """
+                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                    login <USERNAME> <PASSWORD> - to play chess
+                    quit - playing chess
+                    help - with possible commands
+                    """;
+        }
+        return """
+                create <NAME> - a game
+                list - games
+                join <ID> [WHITE|BLACK|<emtpy>] - a game
+                observe <ID> - a game
+                logout - when you are done
+                quit - playing chess
+                help - with possible commands
+                """;
+    }
 }

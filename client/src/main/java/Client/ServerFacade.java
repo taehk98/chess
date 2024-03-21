@@ -12,7 +12,8 @@ import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
-    private final String serverUrl;
+    String serverUrl = null;
+   HttpURLConnection http = null;
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -31,12 +32,16 @@ public class ServerFacade {
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http = (HttpURLConnection) url.openConnection();
+
+            http.setReadTimeout(5000);
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
             writeBody(request, http);
             http.connect();
+
+
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
@@ -46,9 +51,8 @@ public class ServerFacade {
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
-            http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(request);
-            try (OutputStream reqBody = http.getOutputStream()) {
+            try (OutputStream reqBody = http.getOutputStream();) {
+                String reqData = new Gson().toJson(request);
                 reqBody.write(reqData.getBytes());
             }
         }
