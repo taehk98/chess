@@ -3,7 +3,9 @@ package Client;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
+import server.*;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -21,15 +23,39 @@ public class ServerFacade {
 
     public AuthData addUser(UserData user) throws DataAccessException {
         var path = "/user";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        return this.makeRequest("POST", path, null, user, AuthData.class);
     }
 
     public AuthData getUser(UserData user) throws DataAccessException {
         var path = "/session";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        return this.makeRequest("POST", path, null, user, AuthData.class);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {
+    public RegisterRes deleteUser(AuthData auth) throws DataAccessException {
+        var path = "/session";
+        return this.makeRequest("DELETE", path, auth, null, RegisterRes.class);
+    }
+
+    public ListGameResponse listGames(AuthData auth) throws DataAccessException {
+        var path = "/game";
+        return this.makeRequest("GET", path, auth, null,ListGameResponse.class);
+    }
+
+    public RegisterRes clear() throws DataAccessException {
+        var path = "/db";
+        return this.makeRequest("DELETE", path, null, null, RegisterRes.class);
+    }
+
+    public CreateGameResponse createGame(AuthData auth, GameData game) throws DataAccessException {
+        var path = "/game";
+        return this.makeRequest("POST", path, auth, game, CreateGameResponse.class);
+    }
+    public RegisterRes joinGame(AuthData auth, JoinRequest req) throws DataAccessException {
+        var path = "/game";
+        return this.makeRequest("PUT", path, auth, req, RegisterRes.class);
+    }
+
+    private <T> T makeRequest(String method, String path, AuthData auth, Object request, Class<T> responseClass) throws DataAccessException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             http = (HttpURLConnection) url.openConnection();
@@ -37,10 +63,15 @@ public class ServerFacade {
             http.setReadTimeout(5000);
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
-            writeBody(request, http);
+            if(auth != null) {
+                http.addRequestProperty("authorization", auth.authToken());
+                if(method.equals("PUT") || method.equals("POST")){
+                    writeBody(request, http);
+                }
+            }else {
+                writeBody(request, http);
+            }
             http.connect();
-
 
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -50,9 +81,9 @@ public class ServerFacade {
     }
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
+        String reqData = new Gson().toJson(request);
         if (request != null) {
             try (OutputStream reqBody = http.getOutputStream();) {
-                String reqData = new Gson().toJson(request);
                 reqBody.write(reqData.getBytes());
             }
         }

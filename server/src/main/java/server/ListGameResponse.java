@@ -10,4 +10,16 @@ public class ListGameResponse {
     public void setGameList(GameData[] games) {
         this.games = games;
     }
+
+    public String getGamesString() {
+        StringBuilder sb = new StringBuilder();
+        for (GameData gameData : games) {
+            sb.append("Game ID: ").append(gameData.gameID())
+                    .append(", White Username: ").append(gameData.whiteUsername())
+                    .append(", Black Username: ").append(gameData.blackUsername())
+                    .append(", Game Name: ").append(gameData.gameName())
+                    .append("\n");
+        }
+        return sb.toString();
+    }
 }

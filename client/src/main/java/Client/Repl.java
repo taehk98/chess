@@ -1,5 +1,6 @@
 package Client;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -24,12 +25,14 @@ public class Repl {
 
             try {
                 result = client.eval(line);
-                var tokens = result.toLowerCase().split(" ");
-                if(tokens[0].equals("Logged") && tokens[1].equals("in")) {
-                    state = "[LOGGED_IN]";
-                }
-                if(tokens[0].equals("Logged") && tokens[1].equals("out")) {
-                    state = "[LOGGED_OUT]";
+                String[] parts = result.split(" ");
+                if(parts.length > 3) {
+                    if (parts[0].equals("Logged") && parts[1].equals("in")) {
+                        state = "[LOGGED_IN]";
+                    }
+                    if (parts[2].equals("signed") && parts[3].equals("out")) {
+                        state = "[LOGGED_OUT]";
+                    }
                 }
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable e) {
@@ -40,6 +43,6 @@ public class Repl {
         System.out.println();
     }
     private void printPrompt() {
-        System.out.print("\n" + state + ">>>" + SET_TEXT_COLOR_GREEN);
+        System.out.print(RESET_TEXT_COLOR + "\n" + state + ">>>" + SET_TEXT_COLOR_GREEN);
     }
 }

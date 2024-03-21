@@ -33,7 +33,7 @@ public class GameService {
 
     public void joinGame(AuthData auth, JoinRequest joinInfo) throws DataAccessException {
         String playerColor = joinInfo.getPlayerColor();
-        if (playerColor != null && !playerColor.isEmpty() && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+        if (playerColor != null && !playerColor.isEmpty() && !playerColor.equalsIgnoreCase("WHITE") && !playerColor.equalsIgnoreCase("BLACK")) {
             throw new DataAccessException("Error: bad request");
         }
         AuthData currAuth = authDAO.getAuth(auth);

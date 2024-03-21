@@ -120,13 +120,13 @@ public class SQLGameDAO implements GameDAO{
     public void updateGame(AuthData currAuth, int gameID, String playerColor) throws DataAccessException {
         GameData currGame = getGame(gameID);
         GameData newGame = null;
-        if (playerColor != null && playerColor.equals("WHITE") && currGame != null) {
+        if (playerColor != null && playerColor.equalsIgnoreCase("WHITE") && currGame != null) {
             if (currGame.whiteUsername() == null) {
                 newGame = new GameData(gameID, currAuth.username(), currGame.blackUsername(), currGame.gameName(), currGame.game());
             } else {
                 throw new DataAccessException("Error: already taken");
             }
-        } else if (playerColor != null && playerColor.equals("BLACK") && currGame != null) {
+        } else if (playerColor != null && playerColor.equalsIgnoreCase("BLACK") && currGame != null) {
             if (currGame.blackUsername() == null) {
                 newGame = new GameData(gameID, currGame.whiteUsername(), currAuth.username(), currGame.gameName(), currGame.game());
             }else {
