@@ -3,6 +3,7 @@ import Client.ServerFacade;
 import chess.*;
 import dataAccess.DataAccessException;
 import server.Server;
+import ui.ChessBoardPrinter;
 
 public class Main {
     private static Server server;
@@ -15,11 +16,9 @@ public class Main {
         facade = new ServerFacade(serverUrl);
         facade.clear();
 
-//        var serverUrl = "http://localhost:8080";
-//        if (args.length == 1) {
-//            serverUrl = args[0];
-//        }
-//
         new Repl(serverUrl).run();
+//        ChessBoardPrinter printer = new ChessBoardPrinter();
+//        printer.printChessBoard(new ChessGame(), true);
+//        printer.printChessBoard(new ChessGame(), false);
     }
 }

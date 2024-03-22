@@ -1,5 +1,8 @@
 package Client;
 
+import chess.ChessGame;
+import ui.ChessBoardPrinter;
+
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -14,8 +17,8 @@ public class Repl {
     }
 
     public void run () {
-        System.out.println(WHITE_KING + "Welcome to 240 chess. Type Help to get started." + WHITE_KING);
-        System.out.print(client.help());
+        System.out.println("\n"+ WHITE_KING + "Welcome to 240 chess. Type Help to get started." + WHITE_KING + "\n");
+        System.out.print(SET_TEXT_COLOR_BLUE + client.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -33,6 +36,12 @@ public class Repl {
                     if (parts[2].equals("signed") && parts[3].equals("out")) {
                         state = "[LOGGED_OUT]";
                     }
+                    if (parts[1].equals("connected")) {
+                        boolean isWhite = parts[9].equalsIgnoreCase("white")
+                                || parts[9].equalsIgnoreCase("an");
+                        ChessBoardPrinter printer = new ChessBoardPrinter();
+                        printer.printChessBoard(new ChessGame(), isWhite);
+                    }
                 }
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable e) {
@@ -43,6 +52,6 @@ public class Repl {
         System.out.println();
     }
     private void printPrompt() {
-        System.out.print(RESET_TEXT_COLOR + "\n" + state + ">>>" + SET_TEXT_COLOR_GREEN);
+        System.out.print(SET_TEXT_COLOR_WHITE + "\n" + state + ">>>" + SET_TEXT_COLOR_GREEN);
     }
 }

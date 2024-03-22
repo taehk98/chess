@@ -5,13 +5,17 @@ import model.GameData;
 import java.util.ArrayList;
 
 public class ListGameResponse {
-    private GameData[] games;
+    private GameData[] games = null;
 
     public void setGameList(GameData[] games) {
         this.games = games;
     }
 
     public String getGamesString() {
+        if (games == null || games.length == 0) {
+            return "No games available.";
+        }
+
         StringBuilder sb = new StringBuilder();
         for (GameData gameData : games) {
             sb.append("Game ID: ").append(gameData.gameID())

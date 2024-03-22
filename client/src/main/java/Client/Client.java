@@ -1,5 +1,7 @@
 package Client;
 
+import chess.ChessGame;
+import chess.ChessPiece;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
@@ -8,9 +10,12 @@ import server.CreateGameResponse;
 import server.JoinRequest;
 import server.ListGameResponse;
 import server.RegisterRes;
+import ui.ChessBoardPrinter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static ui.EscapeSequences.*;
 
 public class Client {
     private final ServerFacade server;
@@ -23,6 +28,7 @@ public class Client {
     private AuthData auth = null;
     private boolean isWhite = false;
     private boolean isBlack = false;
+    private boolean isObserver = false;
 
     public Client(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -42,7 +48,8 @@ public class Client {
                 case "list" -> listGames();
                 case "join", "observe" -> joinGame(params);
                 case "create" -> createGame(params);
-                default -> help();
+                case "help" -> help();
+                default -> error();
             };
         } catch (DataAccessException ex) {
             return ex.getMessage();
@@ -50,7 +57,7 @@ public class Client {
     }
 
     public String logIn(String... params) throws DataAccessException {
-        if (params.length >= 1) {
+        if (params.length == 2) {
             username = params[0];
             password = params[1];
             UserData user = new UserData(username, password, null);
@@ -59,18 +66,18 @@ public class Client {
             state = State.SIGNEDIN;
             return String.format("Logged in as %s", username);
         }
-        throw new DataAccessException("client Login Error");
+        throw new DataAccessException(SET_TEXT_COLOR_RED+ "client Login Error");
     }
 
     public String register(String... params) throws DataAccessException {
-        if (params.length >= 1){
+        if (params.length == 3){
             username = params[0];
             UserData user = new UserData(params[0], params[1], params[2]);
             auth = server.addUser(user);
             state = State.SIGNEDIN;
             return String.format("Logged in as %s", params[0]);
         }
-        throw new DataAccessException("client Register Error");
+        throw new DataAccessException(SET_TEXT_COLOR_RED+ "Registration Error. Please enter the correct format");
     }
 
     public String logOut() throws DataAccessException {
@@ -89,7 +96,7 @@ public class Client {
             CreateGameResponse res = server.createGame(auth, game);
             return String.format("You created a game with ID: %d", res.getGameID());
         }else {
-            throw new DataAccessException("CreateGame Wrong input");
+            throw new DataAccessException(SET_TEXT_COLOR_RED+ "Error. CreateGame Wrong input");
         }
     }
 
@@ -105,13 +112,14 @@ public class Client {
         if(params.length == 1){
             gameID = Integer.parseInt(params[0]);
             playerColor = null;
+            isObserver = true;
         }
         else if (params.length == 2){
             gameID = Integer.parseInt(params[0]);
             playerColor = params[1];
             if(playerColor.equalsIgnoreCase("white")){
                 isWhite = true;
-            }else{
+            }else {
                 isBlack = true;
             }
         }
@@ -123,8 +131,20 @@ public class Client {
         if(res.getMessage() != null){
             return res.getMessage();
         }else{
-            return String.format("You joined a game as ID: %d", gameID);
+            String color = "";
+            if (isWhite && !isBlack && !isObserver){
+                color = "White";
+            }else if (!isWhite && isBlack && !isObserver){
+                color = "Black";
+            }else if (isObserver) {
+                color = "an Observer";
+            }
+            isWhite = false;
+            isBlack = false;
+            isObserver = false;
+            return String.format("You connected to the game with ID %d as '%s.'", gameID, color);
         }
+
     }
 
     public String clear() throws DataAccessException {
@@ -154,9 +174,15 @@ public class Client {
                 """;
     }
 
+    public String error() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(SET_TEXT_COLOR_RED + "Command Error. Please type it again" + "\n" + SET_TEXT_COLOR_BLUE).append(help());
+        return sb.toString();
+    }
+
     private void assertSignedIn() throws DataAccessException {
         if (state == State.SIGNEDOUT) {
-            throw new DataAccessException("You must sign in");
+            throw new DataAccessException("You must sign in first");
         }
     }
 }
