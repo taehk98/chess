@@ -52,6 +52,6 @@ public class Repl {
         System.out.println();
     }
     private void printPrompt() {
-        System.out.print(SET_TEXT_COLOR_WHITE + "\n" + state + ">>>" + SET_TEXT_COLOR_GREEN);
+        System.out.print(SET_TEXT_COLOR_WHITE + "\n" + state + " >>> " + SET_TEXT_COLOR_GREEN);
     }
 }
