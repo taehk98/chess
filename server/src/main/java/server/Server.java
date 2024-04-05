@@ -7,6 +7,7 @@ public class Server {
 
     ServerHandlers serverHandlers = new ServerHandlers();
     GameServerHandlers gameHandlers = new GameServerHandlers();
+    WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public Server(){
     }
