@@ -57,6 +57,7 @@ public class WebSocketHandler {
 
     if ((gameData.whiteUsername() != null && joinPlayer.getPlayerColor() == ChessGame.TeamColor.WHITE && gameData.whiteUsername().equalsIgnoreCase(username))
             || (gameData.blackUsername() != null && joinPlayer.getPlayerColor() == ChessGame.TeamColor.BLACK && gameData.blackUsername().equalsIgnoreCase(username))) {
+      System.out.println("here in joinPlayer");
       connections.add(joinPlayer.getAuthString(), session);
       var notification = String.format("%s joined the game as a player (%s).", username, joinPlayer.getPlayerColor());
       var newNotif = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notification);
@@ -106,8 +107,11 @@ public class WebSocketHandler {
         var newNotif = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notification);
 
         connections.loadGame(loadGame, session);
+        System.out.println("between");
         connections.broadcast(authToken, newNotif);
+        System.out.println("between2");
         connections.broadcast(authToken, loadGame);
+        System.out.println("between3");
 
         if (chessGame.isInCheckmate(chessGame.getTeamTurn())){
           String team = chessGame.getTeamTurn() == ChessGame.TeamColor.BLACK ? "White" : "Black";

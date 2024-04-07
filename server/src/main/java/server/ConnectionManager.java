@@ -12,8 +12,8 @@ public class ConnectionManager {
   public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 
   public void loadGame(ServerMessage game, Session session) throws IOException {
-    var json = new Gson().toJson(game);
-    session.getRemote().sendString(json);
+//    var json = new Gson().toJson(game);
+    session.getRemote().sendString(new Gson().toJson(game));
   }
 
   public void resignMessage(ServerMessage resign, Session session) throws IOException {
@@ -38,6 +38,7 @@ public class ConnectionManager {
     for(var c : connections.values()){
       if(c.session.isOpen()){
         if(!c.authToken.equals(authToken)){
+          System.out.println("here in broadcast");
           c.send(new Gson().toJson(message));
         }
       }else{
