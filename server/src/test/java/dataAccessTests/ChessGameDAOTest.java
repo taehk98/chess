@@ -4,7 +4,6 @@ import chess.ChessGame;
 import dataAccess.*;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 import org.junit.jupiter.api.*;
 
 import java.sql.SQLException;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class GameDAOTest {
+public class ChessGameDAOTest {
     private GameDAO gameDAO;
 
     @BeforeEach
@@ -37,8 +36,8 @@ public class GameDAOTest {
     @DisplayName("gameDAO createGame Positive test")
     public void PosCreateTest() throws DataAccessException {
         gameDAO.clear();
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
         GameData returnedGame = gameDAO.getGame(1);
         Assertions.assertEquals(returnedGame.gameName(), "gameNameEX");
@@ -47,8 +46,8 @@ public class GameDAOTest {
     @Order(2)
     @DisplayName("gameDAO createGame negative test")
     public void NegCreateTest() throws DataAccessException {
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
         GameData returnedGame = gameDAO.getGame(1);
         Assertions.assertNotEquals(returnedGame.gameID(), 123);
@@ -60,8 +59,8 @@ public class GameDAOTest {
     public void PosGetGameTest() throws DataAccessException {
         GameData returnedNull = gameDAO.getGame(1);
         Assertions.assertNull(returnedNull);
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
         GameData returnedGame = gameDAO.getGame(1);
         Assertions.assertNotNull(returnedGame);
@@ -71,8 +70,8 @@ public class GameDAOTest {
     @Order(4)
     @DisplayName("gameDAO getGame negative test")
     public void NegGetGameTest() throws DataAccessException {
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
         GameData returnedGame = gameDAO.getGame(1);
         Assertions.assertNotNull(returnedGame);
@@ -82,10 +81,10 @@ public class GameDAOTest {
     @Order(5)
     @DisplayName("Negatively Tests if listGames works")
     public void NegListGamesTest() throws DataAccessException {
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
-        GameData anotherGame = new GameData(456, null, null, "anotherGameName", game);
+        GameData anotherGame = new GameData(456, null, null, "anotherGameName", chessGame);
         gameDAO.createGame(anotherGame);
         ArrayList<GameData> lists = gameDAO.listGames();
         Assertions.assertNotEquals(lists.size(), 1);
@@ -95,10 +94,10 @@ public class GameDAOTest {
     @Order(6)
     @DisplayName("Positively Tests if listGames works")
     public void PosListGamesTest() throws DataAccessException {
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
-        GameData anotherGame = new GameData(456, null, null, "anotherGameName", game);
+        GameData anotherGame = new GameData(456, null, null, "anotherGameName", chessGame);
         gameDAO.createGame(anotherGame);
         ArrayList<GameData> lists = gameDAO.listGames();
         Assertions.assertEquals(lists.get(1).gameName(), "anotherGameName");
@@ -108,8 +107,8 @@ public class GameDAOTest {
     @Order(7)
     @DisplayName("Tests clear() to see if it clears appropriately")
     public void ClearTest() throws DataAccessException {
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
         GameData returnedGame = gameDAO.getGame(1);
         Assertions.assertNotNull(returnedGame);
@@ -122,8 +121,8 @@ public class GameDAOTest {
     @Order(8)
     @DisplayName("Positively Tests UpdateGame() to see if it updates appropriately")
     public void PosUpdateGameTest() throws DataAccessException {
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
         GameData returnedGame = gameDAO.getGame(1);
         Assertions.assertNotNull(returnedGame);
@@ -137,8 +136,8 @@ public class GameDAOTest {
     @Order(9)
     @DisplayName("Negatively Tests UpdateGame() to see if it updates appropriately")
     public void NegUpdateGameTest() throws DataAccessException {
-        ChessGame game = new ChessGame();
-        GameData newGame = new GameData(123, null, null, "gameNameEX", game);
+        ChessGame chessGame= new ChessGame();
+        GameData newGame = new GameData(123, null, null, "gameNameEX", chessGame);
         gameDAO.createGame(newGame);
         GameData returnedGame = gameDAO.getGame(1);
         Assertions.assertNotNull(returnedGame);

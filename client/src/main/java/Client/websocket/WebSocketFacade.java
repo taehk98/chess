@@ -1,23 +1,21 @@
 package Client.websocket;
 
-import javax.management.Notification;
 import javax.websocket.*;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import dataAccess.MemoryGameDAO;
-import dataAccess.SQLGameDAO;
+import dataAccess.ChessBoardAdapter;
+import dataAccess.ChessGameAdapter;
+import dataAccess.ChessPieceAdapter;
 import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,31 +26,39 @@ public class WebSocketFacade extends Endpoint{
 
 
   public WebSocketFacade(String url, NotificationHandler notificationHandler) throws DeploymentException, IOException, URISyntaxException {
-    url = url.replace("http", "ws");
-    URI socketURI = new URI(url + "/connect");
-    this.notificationHandler = notificationHandler;
-    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-    this.session = container.connectToServer(this, socketURI);
+    try {
+      url = url.replace("http", "ws");
+      URI socketURI = new URI(url + "/connect");
+      this.notificationHandler = notificationHandler;
+      WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+      this.session = container.connectToServer(this, socketURI);
 
-    //set message handler
-    this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-      @Override
-      public void onMessage(String message) {
-        ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-        if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-          var builder = new GsonBuilder();
-          LoadGameMessage loadGameMessage = builder.create().fromJson(message, LoadGameMessage.class);
-          // game 클래스가 아니라?
-          notificationHandler.loadGame(loadGameMessage);
-        }else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-          NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
-          notificationHandler.notify(notificationMessage);
-        }else {
-          ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
-          notificationHandler.error(errorMessage);
+      //set message handler
+      this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+        @Override
+        public void onMessage(String message) {
+          ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+          if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+            var builder = new GsonBuilder();
+            builder.registerTypeAdapter(ChessGame.class, new ChessGameAdapter());
+            builder.registerTypeAdapter(ChessPiece.class, new ChessPieceAdapter());
+            builder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+            LoadGameMessage loadGameMessage = builder.create().fromJson(message, LoadGameMessage.class);
+            // game 클래스가 아니라?
+            notificationHandler.loadGame(loadGameMessage);
+          }else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
+            notificationHandler.notify(notificationMessage);
+          }else {
+            ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+            notificationHandler.error(errorMessage);
+          }
         }
-      }
-    });
+      });
+    }catch (DeploymentException | IOException | URISyntaxException ex){
+      throw ex;
+    }
+
   }
 
   @Override
@@ -65,8 +71,12 @@ public class WebSocketFacade extends Endpoint{
             color.equalsIgnoreCase("white")
                     ? ChessGame.TeamColor.WHITE
                     : ChessGame.TeamColor.BLACK;
-    var command = new JoinPlayer(authToken, gameID, playerColor);
-    this.session.getBasicRemote().sendText(new Gson().toJson(command));
+    try{
+      var command = new JoinPlayer(authToken, gameID, playerColor);
+      this.session.getBasicRemote().sendText(new Gson().toJson(command));
+    }catch(IOException ex) {
+      throw new IOException("Failed to join as a player");
+    }
   }
 
   public void joinGameAsObserver(String authToken, Integer gameID) throws IOException {

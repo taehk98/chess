@@ -18,10 +18,10 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public int createGame(GameData game) throws DataAccessException {
-        ChessGame newChessGame = new ChessGame();
+        ChessGame newChessChessGame= new ChessGame();
         String white = null;
         String black = null;
-        GameData newGame = new GameData(nextId++, white, black, game.gameName(), newChessGame);
+        GameData newGame = new GameData(nextId++, white, black, game.gameName(), newChessChessGame);
         games.put(newGame.gameID(), newGame);
         return newGame.gameID();
     }
@@ -52,6 +52,12 @@ public class MemoryGameDAO implements GameDAO {
                 throw new DataAccessException("Error: already taken");
             }
         }
+    }
+
+    public void updateGameForMove(int gameID, ChessGame newGame) throws DataAccessException {
+        GameData game = games.get(gameID);
+        GameData newGameData = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), newGame);
+        games.put(game.gameID(), newGameData);
     }
 
 }

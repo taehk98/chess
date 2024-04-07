@@ -1,16 +1,11 @@
 package Service;
 
-import chess.ChessPiece;
 import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import server.JoinRequest;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 
 public class GameService {
     private final AuthDAO authDAO = new SQLAuthDAO();

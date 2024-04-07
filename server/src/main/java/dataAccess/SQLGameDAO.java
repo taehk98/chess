@@ -1,14 +1,11 @@
 package dataAccess;
 
-import chess.ChessBoard;
 import chess.ChessGame;
-import chess.ChessPiece;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import model.AuthData;
 import model.GameData;
+import org.springframework.security.core.parameters.P;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -25,7 +22,7 @@ public class SQLGameDAO implements GameDAO{
         try(var conn = DatabaseManager.getConnection()){
 
             var createAuthTokenTable ="""
-              CREATE TABLE IF NOT EXISTS game(
+              CREATE TABLE IF NOT EXISTS chessGame(
                   gameID INT NOT NULL AUTO_INCREMENT,
                   whiteUsername VARCHAR(255),
                   blackUsername VARCHAR(255),
@@ -44,7 +41,7 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public void clear() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var preparedStatement = conn.prepareStatement("TRUNCATE TABLE game");
+            var preparedStatement = conn.prepareStatement("TRUNCATE TABLE chessGame");
             preparedStatement.executeUpdate();
             gameID = 1;
         } catch (SQLException e) {
@@ -53,12 +50,12 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public int createGame(GameData game) throws DataAccessException {
-        ChessGame newChessGame = new ChessGame();
-        GameData newGame = new GameData(gameID, null, null, game.gameName(), newChessGame);
+    public int createGame(GameData chessGame) throws DataAccessException {
+        ChessGame newChessChessGame= new ChessGame();
+        GameData newGame = new GameData(gameID, null, null, chessGame.gameName(), newChessChessGame);
 //        var json = new Gson().toJson(newGame);
         try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement("INSERT INTO game (whiteUsername, blackUsername, " +
+             var preparedStatement = conn.prepareStatement("INSERT INTO chessGame (whiteUsername, blackUsername, " +
                      "gameName, chessGame) VALUES (?, ?, ?, ?)")) {
             preparedStatement.setString(1, newGame.whiteUsername());
             preparedStatement.setString(2, newGame.blackUsername());
@@ -69,14 +66,14 @@ public class SQLGameDAO implements GameDAO{
             gameID++;
             return newGame.gameID();
         } catch (SQLException e) {
-            throw new DataAccessException("Error creating game");
+            throw new DataAccessException("Error creating chessGame");
         }
     }
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM game WHERE gameID=?";
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM chessGame WHERE gameID=?";
             try( var ps = conn.prepareStatement(statement) ){
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
@@ -90,7 +87,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Error retrieving game");
+            throw new DataAccessException("Error retrieving chessGame");
         }
         return null;
     }
@@ -99,7 +96,7 @@ public class SQLGameDAO implements GameDAO{
     public ArrayList<GameData> listGames() throws DataAccessException {
         var result = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame  FROM game";
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGame  FROM chessGame";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -120,30 +117,57 @@ public class SQLGameDAO implements GameDAO{
     public void updateGame(AuthData currAuth, int gameID, String playerColor) throws DataAccessException {
         GameData currGame = getGame(gameID);
         GameData newGame = null;
-        if (playerColor != null && playerColor.equalsIgnoreCase("WHITE") && currGame != null) {
-            if (currGame.whiteUsername() == null) {
-                newGame = new GameData(gameID, currAuth.username(), currGame.blackUsername(), currGame.gameName(), currGame.game());
-            } else {
-                throw new DataAccessException("Error: already taken");
+            if (playerColor != null && playerColor.equalsIgnoreCase("WHITE") && currGame != null) {
+                if (currGame.whiteUsername() == null) {
+                    newGame = new GameData(gameID, currAuth.username(), currGame.blackUsername(), currGame.gameName(), currGame.game());
+                }else if(currAuth.username() == null){
+                    newGame = new GameData(gameID, null, currGame.blackUsername(), currGame.gameName(), currGame.game());
+                }else {
+                    throw new DataAccessException("Error: already taken");
+                }
+            } else if (playerColor != null && playerColor.equalsIgnoreCase("BLACK") && currGame != null) {
+                if (currGame.blackUsername() == null) {
+                    newGame = new GameData(gameID, currGame.whiteUsername(), currAuth.username(), currGame.gameName(), currGame.game());
+                }else if(currAuth.username() == null){
+                    newGame = new GameData(gameID, currGame.whiteUsername(), null, currGame.gameName(), currGame.game());
+                }else {
+                    throw new DataAccessException("Error: already taken");
+                }
+            } else if (playerColor == null) {
+                newGame = currGame;
+            } else if (currGame == null) {
+                throw new DataAccessException("Error: bad request"); //임의로 넣은 에러임
             }
-        } else if (playerColor != null && playerColor.equalsIgnoreCase("BLACK") && currGame != null) {
-            if (currGame.blackUsername() == null) {
-                newGame = new GameData(gameID, currGame.whiteUsername(), currAuth.username(), currGame.gameName(), currGame.game());
-            }else {
-                throw new DataAccessException("Error: already taken");
-            }
-        } else if (playerColor == null) {
-            newGame = currGame;
-        } else if (currGame == null) {
-            throw new DataAccessException("Error: bad request"); //임의로 넣은 에러임
-        }
+
+
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, chessGame = ? WHERE gameID = ?";
+            var statement = "UPDATE chessGame SET whiteUsername = ?, blackUsername = ?, chessGame = ? WHERE gameID = ?";
             Gson gson = new Gson();
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, newGame != null ? newGame.whiteUsername() : null);
                 ps.setString(2, newGame != null ? newGame.blackUsername() : null);
                 ps.setString(3, gson.toJson(newGame != null ? newGame.game() : null));
+                ps.setInt(4, newGame != null ? newGame.gameID() : 0);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error updating Game");
+        }
+    }
+
+    public void updateGameForMove(int gameID, ChessGame game) throws DataAccessException{
+        GameData currGame = getGame(gameID);
+        if(game == null){
+            throw new DataAccessException("Error: Invalid input");
+        }
+        GameData newGame = new GameData(gameID, currGame.whiteUsername(), currGame.blackUsername(), currGame.gameName(), game);
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "UPDATE chessGame SET whiteUsername = ?, blackUsername = ?, chessGame = ? WHERE gameID = ?";
+            Gson gson = new Gson();
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, newGame.whiteUsername());
+                ps.setString(2, newGame.blackUsername());
+                ps.setString(3, gson.toJson(newGame.game()));
                 ps.setInt(4, newGame != null ? newGame.gameID() : 0);
                 ps.executeUpdate();
             }
@@ -159,7 +183,7 @@ public class SQLGameDAO implements GameDAO{
 //    private void configureDatabase() throws DataAccessException {
 //        var createStatements =
 //                """
-//                      CREATE TABLE IF NOT EXISTS game(
+//                      CREATE TABLE IF NOT EXISTS chessGame(
 //                      gameID VARCHAR(255) NOT NULL,
 //                      json TEXT DEFAULT NULL,
 //                      PRIMARY KEY (gameID)

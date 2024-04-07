@@ -1,7 +1,9 @@
 package Client;
 
-import chess.ChessGame;
-import chess.ChessPiece;
+import Client.websocket.NotificationHandler;
+import Client.websocket.WebSocketFacade;
+import chess.ChessMove;
+import chess.ChessPosition;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
@@ -10,9 +12,10 @@ import server.CreateGameResponse;
 import server.JoinRequest;
 import server.ListGameResponse;
 import server.RegisterRes;
-import ui.ChessBoardPrinter;
 
-import java.util.ArrayList;
+import javax.websocket.DeploymentException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.*;
@@ -20,6 +23,7 @@ import static ui.EscapeSequences.*;
 public class Client {
     private final ServerFacade server;
     private final String serverUrl;
+    private final WebSocketFacade ws;
     private State state = State.SIGNEDOUT;
     private String username = null;
     private String password = null;
@@ -30,8 +34,9 @@ public class Client {
     private boolean isBlack = false;
     private boolean isObserver = false;
 
-    public Client(String serverUrl) {
+    public Client(String serverUrl , NotificationHandler notificationHandler) throws DeploymentException, IOException, URISyntaxException {
         server = new ServerFacade(serverUrl);
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
         this.serverUrl = serverUrl;
     }
 
@@ -48,14 +53,78 @@ public class Client {
                 case "list" -> listGames();
                 case "join", "observe" -> joinGame(params);
                 case "create" -> createGame(params);
+                case "redraw" -> redraw();
+                case "resign" -> resign();
+                case "move" -> move(params);
+                case "leave" -> leave();
                 case "help" -> help();
                 default -> error();
             };
-        } catch (DataAccessException ex) {
+        } catch (DataAccessException | IOException ex) {
             return ex.getMessage();
         }
     }
 
+    public boolean getIsWhite() {
+        return isWhite;
+    }
+    public String redraw() {
+        return "redraw";
+    }
+    public String resign(){
+        try{
+            ws.resignGame(auth.authToken(), gameID);
+        }catch (Exception e){
+            return "Error";
+        }
+        return "You resigned";
+    }
+    public String move(String... params){
+        ChessPosition startPosition;
+        ChessPosition endPosition;
+        ChessMove move;
+        try{
+            if(params.length == 2){
+                // move before and after
+                char a = params[0].charAt(0);
+                String i = params[0].substring(1,2);
+                int startCol = params[0].charAt(0) - 'a';
+                int startRow = Integer.parseInt(params[0].substring(1,2));
+                startPosition = new ChessPosition(startRow , startCol + 1);
+                System.out.println(startPosition);
+                int endCol = params[1].charAt(0) - 'a';
+                int endRow = Integer.parseInt(params[1].substring(1,2));
+                endPosition = new ChessPosition(endRow , endCol + 1);
+                System.out.println(endPosition);
+                move = new ChessMove(startPosition, endPosition, null);
+                ws.makeGameMove(auth.authToken(), gameID, move);
+
+                return String.format("%s is trying to move ", username);
+            }else{
+                //error of command
+                return "Wrong";
+            }
+        }catch (Exception e){
+            return "Error";
+        }
+    }
+
+    public String leave() {
+        try{
+            ws.leaveGame(auth.authToken(), gameID);
+            if(isWhite){
+                isWhite = false;
+            }else{
+                isBlack = false;
+            }
+            if(isObserver){
+                isObserver = false;
+            }
+            return String.format("%s left the chessGame.", username);
+        }catch (Exception e){
+            return "Failed to leave";
+        }
+    }
     public String logIn(String... params) throws DataAccessException {
         if (params.length == 2) {
             username = params[0];
@@ -94,7 +163,7 @@ public class Client {
             String gameName = params[0];
             GameData game = new GameData(0, null, null, gameName, null);
             CreateGameResponse res = server.createGame(auth, game);
-            return String.format("You created a game with ID: %d", res.getGameID());
+            return String.format("You created a chessGame with ID: %d", res.getGameID());
         }else {
             throw new DataAccessException(SET_TEXT_COLOR_RED+ "Error. CreateGame Wrong input");
         }
@@ -107,43 +176,45 @@ public class Client {
         return list.getGamesString();
     }
 
-    public String joinGame(String... params) throws DataAccessException {
+    public String joinGame(String... params) throws DataAccessException, IOException {
         assertSignedIn();
-        if(params.length == 1){
+        try{
             gameID = Integer.parseInt(params[0]);
-            playerColor = null;
-            isObserver = true;
-        }
-        else if (params.length == 2){
-            gameID = Integer.parseInt(params[0]);
-            playerColor = params[1];
-            if(playerColor.equalsIgnoreCase("white")){
-                isWhite = true;
-            }else {
-                isBlack = true;
+            playerColor = params.length == 1 ? null : params[1];
+            JoinRequest req = new JoinRequest(playerColor, gameID);
+            RegisterRes res = server.joinGame(auth, req);
+            if(res.getMessage() != null){
+                return res.getMessage();
+            }else{
+                if(params.length == 1){
+                    isObserver = true;
+                }else if(params.length == 2) {
+                    if(playerColor.equalsIgnoreCase("white")){
+                        isWhite = true;
+                    }else if(playerColor.equalsIgnoreCase("black")) {
+                        isBlack = true;
+                    }
+                }
+                String color = "";
+                if (isWhite && !isBlack && !isObserver){
+                    color = "White";
+                    ws.joinGameAsPlayer(auth.authToken(), gameID, color);
+                }else if (!isWhite && isBlack && !isObserver){
+                    color = "Black";
+                    ws.joinGameAsPlayer(auth.authToken(), gameID, color);
+                }else if (isObserver) {
+                    color = "an Observer";
+                    ws.joinGameAsObserver(auth.authToken(), gameID);
+                }
+//            isWhite = false;
+//            isBlack = false;
+//            isObserver = false;
+                return String.format("You connected to the chessGame with ID %d as '%s.'", gameID, color);
             }
+        }catch(Exception ex){
+            throw new DataAccessException("Failed to join the chessGame");
         }
-        else {
-            throw new DataAccessException("JoinGame Wrong input");
-        }
-        JoinRequest req = new JoinRequest(playerColor, gameID);
-        RegisterRes res = server.joinGame(auth, req);
-        if(res.getMessage() != null){
-            return res.getMessage();
-        }else{
-            String color = "";
-            if (isWhite && !isBlack && !isObserver){
-                color = "White";
-            }else if (!isWhite && isBlack && !isObserver){
-                color = "Black";
-            }else if (isObserver) {
-                color = "an Observer";
-            }
-            isWhite = false;
-            isBlack = false;
-            isObserver = false;
-            return String.format("You connected to the game with ID %d as '%s.'", gameID, color);
-        }
+
 
     }
 
@@ -157,21 +228,39 @@ public class Client {
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
-                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
-                    login <USERNAME> <PASSWORD> - to play chess
-                    quit - playing chess
-                    help - with possible commands
-                    """;
-        }
-        return """
-                create <NAME> - a game
+                register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                login <USERNAME> <PASSWORD> - to play chess
+                quit - playing chess
+                help - with possible commands
+                """;
+        }else if (state == State.SIGNEDIN && !isObserver && !isBlack && !isWhite){
+            return """
+                create <NAME> - a chessGame
                 list - games
-                join <ID> [WHITE|BLACK|<emtpy>] - a game
-                observe <ID> - a game
+                join <ID> [WHITE|BLACK|<emtpy>] - a chessGame
+                observe <ID> - a chessGame
                 logout - when you are done
                 quit - playing chess
                 help - with possible commands
                 """;
+        }else if (state == State.SIGNEDIN && !isObserver && (isWhite || isBlack)) {
+            return """
+                redraw - the board
+                leave - the chessGame
+                move <beforeMove> <afterMove> - a piece
+                resign <ID> - a chessGame
+                logout - the chessGame
+                highlight <position> - legal moves
+                help - with possible commands
+                """;
+        }else if (state == State.SIGNEDIN && isObserver) {
+            return """
+                redraw - the board
+                leave - the chessGame
+                help - with possible commands
+                """;
+        }
+        return "Error: printing help()";
     }
 
     public String error() {

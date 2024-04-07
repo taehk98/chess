@@ -49,4 +49,13 @@ public class ChessPosition {
     public int hashCode() {
         return Objects.hash(row, col);
     }
+
+    public String toString() {
+        String strRow = Integer.toString(row);
+        String strCol = Integer.toString(col);
+        return
+                "row=" + strRow +
+                        ", column=" + strCol;
+    }
+
 }

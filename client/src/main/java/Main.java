@@ -5,10 +5,14 @@ import dataAccess.DataAccessException;
 import server.Server;
 import ui.ChessBoardPrinter;
 
+import javax.websocket.DeploymentException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class Main {
     private static Server server;
     static ServerFacade facade;
-    public static void main(String[] args) throws DataAccessException {
+    public static void main(String[] args) throws DataAccessException, DeploymentException, IOException, URISyntaxException {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
