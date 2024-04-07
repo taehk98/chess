@@ -1,7 +1,7 @@
 package clientTests;
 
 import Client.ServerFacade;
-import dataAccess.DataAccessException;
+import java.io.IOException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -21,7 +21,7 @@ public class ServerFacadeTests {
     static ServerFacade facade;
 
     @BeforeAll
-    public static void init() throws DataAccessException {
+    public static void init() throws IOException {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
@@ -31,7 +31,7 @@ public class ServerFacadeTests {
     }
 
     @AfterEach
-    public void between() throws DataAccessException {
+    public void between() throws IOException {
         facade.clear();
     }
 
@@ -51,7 +51,7 @@ public class ServerFacadeTests {
 
         facade.clear();
 
-        Throwable exception = assertThrows(DataAccessException.class, () -> facade.getUser(new UserData("user2", "password", null)));
+        Throwable exception = assertThrows(IOException.class, () -> facade.getUser(new UserData("user2", "password", null)));
 
         String expectedMessage = "Request Error";
         String actualMessage = exception.getMessage();
@@ -68,7 +68,7 @@ public class ServerFacadeTests {
 
         facade.clear();
 
-        Throwable exception = assertThrows(DataAccessException.class, () -> facade.createGame(auth, new GameData(0, null, null, "newGame", null)));
+        Throwable exception = assertThrows(IOException.class, () -> facade.createGame(auth, new GameData(0, null, null, "newGame", null)));
 
         String expectedMessage = "Request Error";
         String actualMessage = exception.getMessage();
@@ -105,7 +105,7 @@ public class ServerFacadeTests {
         UserData user = new UserData("player3", "password", "p1@email.com");
         facade.addUser(user);
 
-        Throwable exception = assertThrows(DataAccessException.class, () -> facade.getUser(new UserData("player3", "Wrong-password", null)));
+        Throwable exception = assertThrows(IOException.class, () -> facade.getUser(new UserData("player3", "Wrong-password", null)));
 
         String expectedMessage = "Request Error";
         String actualMessage = exception.getMessage();
@@ -121,7 +121,7 @@ public class ServerFacadeTests {
 
         facade.deleteUser(auth);
 
-        Throwable exception = assertThrows(DataAccessException.class, () -> facade.createGame(auth, new GameData(0, null, null, "newGame", null)));
+        Throwable exception = assertThrows(IOException.class, () -> facade.createGame(auth, new GameData(0, null, null, "newGame", null)));
         String expectedMessage = "Request Error";
         String actualMessage = exception.getMessage();
 
@@ -130,7 +130,7 @@ public class ServerFacadeTests {
 
     @Test
     void negLogOutTest() {
-        Throwable exception = assertThrows(DataAccessException.class, () -> facade.deleteUser(new AuthData("notExists", "wrong")));
+        Throwable exception = assertThrows(IOException.class, () -> facade.deleteUser(new AuthData("notExists", "wrong")));
         String expectedMessage = "Request Error";
         String actualMessage = exception.getMessage();
 
@@ -138,7 +138,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void posCreateGameTest() throws DataAccessException {
+    void posCreateGameTest() throws IOException {
         UserData user = new UserData("player3", "password", "p1@email.com");
         AuthData auth = facade.addUser(user);
 
@@ -148,7 +148,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void negCreateGameTest() throws DataAccessException {
+    void negCreateGameTest() throws IOException {
         UserData user = new UserData("player3", "password", "p1@email.com");
         AuthData auth = facade.addUser(user);
 
@@ -159,7 +159,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void posListGamesTest() throws DataAccessException {
+    void posListGamesTest() throws IOException {
         UserData user = new UserData("player3", "password", "p1@email.com");
         AuthData auth = facade.addUser(user);
 
@@ -169,7 +169,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void negListGamesTest() throws DataAccessException {
+    void negListGamesTest() throws IOException {
         UserData user = new UserData("player3", "password", "p1@email.com");
         AuthData auth = facade.addUser(user);
 
@@ -180,7 +180,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void posJoinGameTest() throws DataAccessException {
+    void posJoinGameTest() throws IOException {
         UserData user = new UserData("player3", "password", "p1@email.com");
         AuthData auth = facade.addUser(user);
 
@@ -192,14 +192,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void negJoinGameTest() throws DataAccessException {
+    void negJoinGameTest() throws IOException {
         UserData user = new UserData("player3", "password", "p1@email.com");
         AuthData auth = facade.addUser(user);
 
         facade.createGame(auth, new GameData(0, null,null, "newGame", null));
         facade.joinGame(auth, new JoinRequest("white", 1));
 
-        Throwable exception = assertThrows(DataAccessException.class, () -> facade.joinGame(auth, new JoinRequest("white", 1)));
+        Throwable exception = assertThrows(IOException.class, () -> facade.joinGame(auth, new JoinRequest("white", 1)));
 
         String expectedMessage = "Request Error";
         String actualMessage = exception.getMessage();

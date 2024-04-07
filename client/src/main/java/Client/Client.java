@@ -4,7 +4,6 @@ import Client.websocket.NotificationHandler;
 import Client.websocket.WebSocketFacade;
 import chess.ChessMove;
 import chess.ChessPosition;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -60,7 +59,7 @@ public class Client {
                 case "help" -> help();
                 default -> error();
             };
-        } catch (DataAccessException | IOException ex) {
+        } catch (IOException ex) {
             return ex.getMessage();
         }
     }
@@ -125,7 +124,7 @@ public class Client {
             return "Failed to leave";
         }
     }
-    public String logIn(String... params) throws DataAccessException {
+    public String logIn(String... params) throws IOException {
         if (params.length == 2) {
             username = params[0];
             password = params[1];
@@ -135,10 +134,10 @@ public class Client {
             state = State.SIGNEDIN;
             return String.format("Logged in as %s", username);
         }
-        throw new DataAccessException(SET_TEXT_COLOR_RED+ "client Login Error");
+        throw new IOException(SET_TEXT_COLOR_RED+ "client Login Error");
     }
 
-    public String register(String... params) throws DataAccessException {
+    public String register(String... params) throws IOException  {
         if (params.length == 3){
             username = params[0];
             UserData user = new UserData(params[0], params[1], params[2]);
@@ -146,10 +145,10 @@ public class Client {
             state = State.SIGNEDIN;
             return String.format("Logged in as %s", params[0]);
         }
-        throw new DataAccessException(SET_TEXT_COLOR_RED+ "Registration Error. Please enter the correct format");
+        throw new IOException(SET_TEXT_COLOR_RED+ "Registration Error. Please enter the correct format");
     }
 
-    public String logOut() throws DataAccessException {
+    public String logOut() throws IOException {
         assertSignedIn();
         server.deleteUser(auth);
         state = State.SIGNEDOUT;
@@ -157,7 +156,7 @@ public class Client {
         return String.format("%s is signed out", username);
     }
 
-    public String createGame(String... params) throws DataAccessException {
+    public String createGame(String... params) throws IOException {
         assertSignedIn();
         if(params.length == 1) {
             String gameName = params[0];
@@ -165,18 +164,18 @@ public class Client {
             CreateGameResponse res = server.createGame(auth, game);
             return String.format("You created a chessGame with ID: %d", res.getGameID());
         }else {
-            throw new DataAccessException(SET_TEXT_COLOR_RED+ "Error. CreateGame Wrong input");
+            throw new IOException(SET_TEXT_COLOR_RED+ "Error. CreateGame Wrong input");
         }
     }
 
-    public String listGames() throws DataAccessException {
+    public String listGames() throws IOException {
         assertSignedIn();
         ListGameResponse list = server.listGames(auth);
 
         return list.getGamesString();
     }
 
-    public String joinGame(String... params) throws DataAccessException, IOException {
+    public String joinGame(String... params) throws IOException {
         assertSignedIn();
         try{
             gameID = Integer.parseInt(params[0]);
@@ -212,13 +211,13 @@ public class Client {
                 return String.format("You connected to the chessGame with ID %d as '%s.'", gameID, color);
             }
         }catch(Exception ex){
-            throw new DataAccessException("Failed to join the chessGame");
+            throw new IOException("Failed to join the chessGame");
         }
 
 
     }
 
-    public String clear() throws DataAccessException {
+    public String clear() throws IOException {
         server.clear();
         state = State.SIGNEDOUT;
         auth = null;
@@ -269,9 +268,9 @@ public class Client {
         return sb.toString();
     }
 
-    private void assertSignedIn() throws DataAccessException {
+    private void assertSignedIn() throws IOException {
         if (state == State.SIGNEDOUT) {
-            throw new DataAccessException("You must sign in first");
+            throw new IOException("You must sign in first");
         }
     }
 }
