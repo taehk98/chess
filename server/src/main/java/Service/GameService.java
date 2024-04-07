@@ -3,7 +3,7 @@ package Service;
 import dataAccess.*;
 import model.AuthData;
 import model.GameData;
-import server.JoinRequest;
+import RequestResponses.JoinRequest;
 
 import java.util.ArrayList;
 

@@ -6,9 +6,9 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import server.CreateGameResponse;
-import server.JoinRequest;
-import server.ListGameResponse;
+import RequestResponses.CreateGameResponse;
+import RequestResponses.JoinRequest;
+import RequestResponses.ListGameResponse;
 import server.Server;
 
 

@@ -8,10 +8,10 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import server.CreateGameResponse;
-import server.JoinRequest;
-import server.ListGameResponse;
-import server.RegisterRes;
+import RequestResponses.CreateGameResponse;
+import RequestResponses.JoinRequest;
+import RequestResponses.ListGameResponse;
+import RequestResponses.RegisterRes;
 
 import javax.websocket.DeploymentException;
 import java.io.IOException;

@@ -1,17 +1,16 @@
 package server;
 
+import RequestResponses.CreateGameResponse;
+import RequestResponses.JoinRequest;
+import RequestResponses.ListGameResponse;
+import RequestResponses.RegisterRes;
 import Service.GameService;
-import Service.UserService;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import spark.Request;
 import spark.Response;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 public class GameServerHandlers {
     GameService gameService = new GameService();

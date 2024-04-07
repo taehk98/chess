@@ -1,11 +1,14 @@
 package Client;
 
+import RequestResponses.CreateGameResponse;
+import RequestResponses.JoinRequest;
+import RequestResponses.ListGameResponse;
+import RequestResponses.RegisterRes;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import server.*;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;

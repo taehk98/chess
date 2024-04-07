@@ -1,4 +1,4 @@
-package server;
+package RequestResponses;
 
 public class RegisterRes {
     private String message;

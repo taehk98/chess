@@ -1,6 +1,6 @@
 package server;
 
-import Service.GameService;
+import RequestResponses.RegisterRes;
 import Service.UserService;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
