@@ -28,7 +28,8 @@ You can use the following commands to build, test, package, and run your code.
 | `mvn -pl server exec:java` | Build and run the server `Main`                 |
 
 These commands are configured by the `pom.xml` (Project Object Model) files. There is a POM file in the root of the project, and one in each of the modules. The root POM defines any global dependencies and references the module POM files.
-
+Under project structure/artifacts, click the plus and select JAR/from modules with dependencies; set the module to client; select your client main class; and hit ok. Then check the “Include in project build” box so that it updates automatically and hit ok.
+Build your project, then in the terminal, navigate to out/artifacts/client_jar and your jar file should be there. `java -jar yourJarName.jar` should run your client.
 ### Running the program using Java
 
 Once you have compiled your project into an uber jar, you can execute it with the following command.
