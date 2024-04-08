@@ -2,6 +2,8 @@ package Client;
 
 import Client.websocket.NotificationHandler;
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import ui.ChessBoardPrinter;
 import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
@@ -52,7 +54,16 @@ public class Repl implements NotificationHandler {
 //                    }
                 }else if (result.equals("redraw")){
                     ChessBoardPrinter printer = new ChessBoardPrinter();
-                    printer.printChessBoard(game, client.getIsWhite());
+                    printer.printChessBoard(game, client.getIsWhite(), false, new ChessPosition(1, 1));
+                    result = "Redraw the board";
+                }else if (parts[0].equals("highlight")){
+                    ChessBoardPrinter printer = new ChessBoardPrinter();
+                    if (parts.length == 2) {
+                        String charString = parts[1];
+                        char ch = charString.toCharArray()[0];
+                        printer.printChessBoard(game, client.getIsWhite(), true,
+                                new ChessPosition(Integer.parseInt("" + charString.toCharArray()[1]), (ch - 'a' + 1)));
+                    }
                 }
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable e){
@@ -81,7 +92,7 @@ public class Repl implements NotificationHandler {
     public void loadGame(LoadGameMessage loadGameMessage) {
         System.out.println("\n" + SET_TEXT_COLOR_RED + "Loading Game....");
         ChessBoardPrinter printer = new ChessBoardPrinter();
-        printer.printChessBoard(loadGameMessage.game, client.getIsWhite());
+        printer.printChessBoard(loadGameMessage.game, client.getIsWhite(), false, new ChessPosition(1, 1));
 
         this.game= loadGameMessage.game;
         System.out.println(SET_BG_COLOR_DARK_GREY);

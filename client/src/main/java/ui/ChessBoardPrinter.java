@@ -1,9 +1,8 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+
+import java.util.Collection;
 
 import static ui.EscapeSequences.*;
 
@@ -96,34 +95,9 @@ public class ChessBoardPrinter {
         return squares;
     }
 
-    public void printChessBoard(ChessGame chessGame, boolean isWhite) {
-        String[] header = {"a", "b", "c", "d", "e", "f", "g", "h"};
-        ChessBoard chessBoard = chessGame.getBoard();
-        String[][] squares = initializeChessBoard(chessBoard, isWhite);
-
-        for (int row = (isWhite ? 9 : 0); (isWhite ? row >= 0 : row <= 9); row += (isWhite ? -1 : 1)) {
-            for (int col = (isWhite ? 0 : 9); (isWhite ? col <= 9 : col >= 0); col += (isWhite ? 1 : -1)) {
-                if (col == 9 || col == 0) {
-                    if (row == 0 || row == 9) {
-                        System.out.print("\u2001\u2005\u200A" + " " + "\u2001\u2005\u200A" + EscapeSequences.TERMINAL_BG_COLOR);
-                    } else {
-                        System.out.print(SET_TEXT_COLOR_WHITE + "\u2001\u2005\u200A" + row + "\u2001\u2005\u200A" + EscapeSequences.TERMINAL_BG_COLOR);
-                    }
-                } else {
-                    if (row == 0 || row == 9) {
-                        System.out.print(SET_TEXT_COLOR_WHITE + "\u2001\u2005" + header[col - 1] + "\u2001\u2005" + EscapeSequences.TERMINAL_BG_COLOR);
-                    } else {
-                        System.out.print(squares[row][col]);
-                    }
-                }
-            }
-            System.out.println(); // Move to the next row
-        }
-    }
-
-//    public void printHighlightedBoard(ChessGame game, boolean isWhite) {
+//    public void printChessBoard(ChessGame chessGame, boolean isWhite) {
 //        String[] header = {"a", "b", "c", "d", "e", "f", "g", "h"};
-//        ChessBoard chessBoard = game.getBoard();
+//        ChessBoard chessBoard = chessGame.getBoard();
 //        String[][] squares = initializeChessBoard(chessBoard, isWhite);
 //
 //        for (int row = (isWhite ? 9 : 0); (isWhite ? row >= 0 : row <= 9); row += (isWhite ? -1 : 1)) {
@@ -146,7 +120,49 @@ public class ChessBoardPrinter {
 //        }
 //    }
 
+    public void printChessBoard(ChessGame game, boolean isWhite, boolean isHighlighted, ChessPosition pos) {
+        String[] header = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        ChessBoard chessBoard = game.getBoard();
+        String[][] squares = initializeChessBoard(chessBoard, isWhite);
+        if(isHighlighted) {squares = checkHighlight(game, squares, pos);};
 
+        for (int row = (isWhite ? 9 : 0); (isWhite ? row >= 0 : row <= 9); row += (isWhite ? -1 : 1)) {
+            for (int col = (isWhite ? 0 : 9); (isWhite ? col <= 9 : col >= 0); col += (isWhite ? 1 : -1)) {
+                if (col == 9 || col == 0) {
+                    if (row == 0 || row == 9) {
+                        System.out.print("\u2001\u2005\u200A" + " " + "\u2001\u2005\u200A" + EscapeSequences.TERMINAL_BG_COLOR);
+                    } else {
+                        System.out.print(SET_TEXT_COLOR_WHITE + "\u2001\u2005\u200A" + row + "\u2001\u2005\u200A" + EscapeSequences.TERMINAL_BG_COLOR);
+                    }
+                } else {
+                    if (row == 0 || row == 9) {
+                        System.out.print(SET_TEXT_COLOR_WHITE + "\u2001\u2005" + header[col - 1] + "\u2001\u2005" + EscapeSequences.TERMINAL_BG_COLOR);
+                    } else {
+                        System.out.print(squares[row][col]);
+                    }
+                }
+            }
+            System.out.println(); // Move to the next row
+        }
+    }
 
+    public String[][] checkHighlight(ChessGame game, String[][] squares, ChessPosition pos) {
+        Collection<ChessMove> validMoves = game.validMoves(pos);
+        for (ChessMove move : validMoves) {
+            int row = move.getEndPosition().getRow();
+            int col = move.getEndPosition().getColumn();
+            if ((row + col) % 2 == 0) {
+                String currStr = squares[row][col];
+                String newString = SET_BG_COLOR_YELLOW + currStr.substring(EscapeSequences.SET_BG_COLOR_LIGHT_GREY.length());
+                squares[row][col] = newString;
+            }
+            else {
+                String currStr = squares[row][col];
+                String newString = SET_BG_COLOR_YELLOW + currStr.substring(EscapeSequences.SET_BG_COLOR_BLACK.length());
+                squares[row][col] = newString;
+            }
+        }
+        return squares;
+    }
 }
 

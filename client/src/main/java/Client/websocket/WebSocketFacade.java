@@ -34,20 +34,11 @@ public class WebSocketFacade extends Endpoint{
       this.session.addMessageHandler(new MessageHandler.Whole<String>() {
         @Override
         public void onMessage(String message) {
-          System.out.println("here in on Message");
           ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
           if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-            var builder = new GsonBuilder();
-//            builder.registerTypeAdapter(ChessGame.class, new ChessGameAdapter());
-//            builder.registerTypeAdapter(ChessPiece.class, new ChessPieceAdapter());
-//            builder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
-//            LoadGameMessage loadGameMessage = builder.create().fromJson(message, LoadGameMessage.class);
             LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
-            System.out.println("here in on Message");
-
             notificationHandler.loadGame(loadGameMessage);
           }else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-            System.out.println("here in notification");
             NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
             notificationHandler.notify(notificationMessage);
           }else {
@@ -59,7 +50,6 @@ public class WebSocketFacade extends Endpoint{
     }catch (DeploymentException | IOException | URISyntaxException ex){
       throw ex;
     }
-
   }
 
   @Override

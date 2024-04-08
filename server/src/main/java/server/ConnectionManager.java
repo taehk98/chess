@@ -38,7 +38,6 @@ public class ConnectionManager {
     for(var c : connections.values()){
       if(c.session.isOpen()){
         if(!c.authToken.equals(authToken)){
-          System.out.println("here in broadcast");
           c.send(new Gson().toJson(message));
         }
       }else{
