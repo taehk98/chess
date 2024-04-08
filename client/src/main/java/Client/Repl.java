@@ -44,14 +44,6 @@ public class Repl implements NotificationHandler {
                     if (parts[2].equals("signed") && parts[3].equals("out")) {
                         state = "[LOGGED_OUT]";
                     }
-//                    if (parts[1].equals("connected")) {
-//                        if(client.getIsWhite()){
-//                            ChessBoardPrinter printer = new ChessBoardPrinter();
-//                            printer.printChessBoard(new ChessGame(), client.getIsWhite());
-//                        }
-////                        boolean isWhite = parts[9].equalsIgnoreCase("white")
-////                                || parts[9].equalsIgnoreCase("an");
-//                    }
                 }else if (result.equals("redraw")){
                     ChessBoardPrinter printer = new ChessBoardPrinter();
                     printer.printChessBoard(game, client.getIsWhite(), false, new ChessPosition(1, 1));
