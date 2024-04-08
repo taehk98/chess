@@ -94,32 +94,6 @@ public class ChessBoardPrinter {
         }
         return squares;
     }
-
-//    public void printChessBoard(ChessGame chessGame, boolean isWhite) {
-//        String[] header = {"a", "b", "c", "d", "e", "f", "g", "h"};
-//        ChessBoard chessBoard = chessGame.getBoard();
-//        String[][] squares = initializeChessBoard(chessBoard, isWhite);
-//
-//        for (int row = (isWhite ? 9 : 0); (isWhite ? row >= 0 : row <= 9); row += (isWhite ? -1 : 1)) {
-//            for (int col = (isWhite ? 0 : 9); (isWhite ? col <= 9 : col >= 0); col += (isWhite ? 1 : -1)) {
-//                if (col == 9 || col == 0) {
-//                    if (row == 0 || row == 9) {
-//                        System.out.print("\u2001\u2005\u200A" + " " + "\u2001\u2005\u200A" + EscapeSequences.TERMINAL_BG_COLOR);
-//                    } else {
-//                        System.out.print(SET_TEXT_COLOR_WHITE + "\u2001\u2005\u200A" + row + "\u2001\u2005\u200A" + EscapeSequences.TERMINAL_BG_COLOR);
-//                    }
-//                } else {
-//                    if (row == 0 || row == 9) {
-//                        System.out.print(SET_TEXT_COLOR_WHITE + "\u2001\u2005" + header[col - 1] + "\u2001\u2005" + EscapeSequences.TERMINAL_BG_COLOR);
-//                    } else {
-//                        System.out.print(squares[row][col]);
-//                    }
-//                }
-//            }
-//            System.out.println(); // Move to the next row
-//        }
-//    }
-
     public void printChessBoard(ChessGame game, boolean isWhite, boolean isHighlighted, ChessPosition pos) {
         String[] header = {"a", "b", "c", "d", "e", "f", "g", "h"};
         ChessBoard chessBoard = game.getBoard();
