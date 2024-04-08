@@ -44,7 +44,7 @@ public class WebSocketHandler {
         case RESIGN -> resign(username, session, message, command.getAuthString());
       }
     }catch (Exception e){
-      var error ="Command Error. Please check your input!";
+      var error ="Command Error. Please check your input or verify if you're next in line.";
       var errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, error);
       connections.sendError(errorMessage, session);
     }
@@ -111,14 +111,15 @@ public class WebSocketHandler {
 
         if (chessGame.isInCheckmate(chessGame.getTeamTurn())){
           String team = chessGame.getTeamTurn() == ChessGame.TeamColor.BLACK ? "White" : "Black";
-          var checkNotifMessage = String.format("Chess Mate by %s, team");
+          var checkNotifMessage = String.format("Chess Mate by %s", team);
           var checkNotif = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkNotifMessage);
           connections.resignMessage(checkNotif, session);
           connections.broadcast(authToken, checkNotif);
+          isResigned = true;
         } else if (chessGame.isInCheck(chessGame.getTeamTurn())) {
           String team=chessGame.getTeamTurn() == ChessGame.TeamColor.BLACK ? "White" : "Black";
           var checkNotifMessage=String.format("Check by %s", team);
-          var checkNotif=new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkNotifMessage);
+          var checkNotif= new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkNotifMessage);
           connections.resignMessage(checkNotif, session);
           connections.broadcast(authToken, checkNotif);
         }

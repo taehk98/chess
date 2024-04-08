@@ -110,7 +110,7 @@ public class ChessBoardPrinter {
                     }
                 } else {
                     if (row == 0 || row == 9) {
-                        System.out.print(SET_TEXT_COLOR_WHITE + "\u2001\u2005" + header[col - 1] + "\u2001\u2005" + EscapeSequences.TERMINAL_BG_COLOR);
+                        System.out.print(SET_TEXT_COLOR_WHITE + "\u2001" + header[col - 1] + "\u2001" + EscapeSequences.TERMINAL_BG_COLOR);
                     } else {
                         System.out.print(squares[row][col]);
                     }

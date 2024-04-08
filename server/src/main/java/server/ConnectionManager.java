@@ -6,13 +6,14 @@ import webSocketMessages.serverMessages.ServerMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
   public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+  public final HashMap<Integer, Connection> lobbyConnections = new HashMap<>();
 
   public void loadGame(ServerMessage game, Session session) throws IOException {
-//    var json = new Gson().toJson(game);
     session.getRemote().sendString(new Gson().toJson(game));
   }
 

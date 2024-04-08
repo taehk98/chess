@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws DeploymentException, IOException, URISyntaxException {
 //        server = new Server();
 //        var port = server.run(0);
-        var port = 63669;
+        var port = 49155;
         System.out.println("Started test HTTP server on " + port);
         String serverUrl = "http://localhost:" + port;
         facade = new ServerFacade(serverUrl);
